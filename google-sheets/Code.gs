@@ -10,6 +10,7 @@ const SHEETS = {
   farms:    { name: 'Фермы',    cols: [['name','Название'],['person','Контакт'],['phone','Телефон'],['district','Район'],['km','Км от СПб'],['spec','Что производит'],['minOrder','Мин. заказ']] },
   products: { name: 'Товары',   cols: [['name','Товар'],['category','Категория'],['unit','Фасовка'],['price','Цена'],['harvestDate','Дата сбора'],['active','В каталоге']] },
   verified: { name: 'Проверка', cols: [['ok','Проверена']] },
+  leads:    { name: 'Заявки',   cols: [['district','Район'],['phone','Телефон'],['createdAt','Когда']] },
   orders:   { name: 'Заказы',   cols: [['num','Номер'],['status','Статус'],['farmName','Ферма'],['buyerName','Покупатель'],['phone','Телефон'],['address','Адрес'],['total','Сумма'],['commission','Комиссия'],['deliveryDate','Дата доставки'],['slot','Время'],['weekly','Еженедельно']] },
 };
 const FIXED = 3; // id, коллекция, обновлено
@@ -42,7 +43,7 @@ function out(o) {
 function kind(coll) {
   if (coll === 'farms') return 'farms';
   if (/^farms\/[A-Za-z0-9_\-.~:@+]+\/products$/.test(coll)) return 'products';
-  if (coll === 'verified' || coll === 'orders') return coll;
+  if (coll === 'verified' || coll === 'orders' || coll === 'leads') return coll;
   throw new Error('Неизвестный раздел: ' + coll);
 }
 
@@ -87,6 +88,7 @@ function rowToDoc(k, row) {
 function readAll() {
   const docs = [];
   Object.keys(SHEETS).forEach(k => {
+    if (k === 'leads') return; // заявки видны только в таблице
     const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS[k].name);
     if (!sh || sh.getLastRow() < 2) return;
     const width = FIXED + SHEETS[k].cols.length + 1;
@@ -110,6 +112,7 @@ function apply(w, key, uid) {
   const farmId = k === 'farms' ? String(w.id) : k === 'products' ? w.coll.split('/')[1] : null;
   if (farmId && key !== ADMIN_KEY && uid !== farmId) throw denied('Это не ваша ферма'); // защита от ошибок, не от взлома
   const sh = sheet(k), d = SHEETS[k];
+  if (k === 'leads' && w.op !== 'set' && key !== ADMIN_KEY) throw denied('Заявку можно только добавить');
   const r = findRow(sh, w.coll, String(w.id));
   if (w.op === 'delete') { if (r > 0) sh.deleteRow(r); return; }
   let data = w.data || {};
