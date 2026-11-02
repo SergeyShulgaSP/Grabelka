@@ -321,7 +321,7 @@ let F={};try{F=JSON.parse(localStorage.getItem(FKEY)||'{}')||{};}catch{F={};}
 const FM={payFails:0,payMethod:'card',lastAddress:null,notifyDone:false,showOther:false};
 function saveFlow(){try{localStorage.setItem(FKEY,JSON.stringify(F));}catch{}}
 if(F.district)S.region=F.district;
-function deliversOn(sellerId,i){const sc=SCHEDULE[sellerId];if(!sc||!F.district)return true;const d=dateOptions()[i];const wd=new Date(d.iso+'T12:00:00').getDay();return sc.days.includes(wd)&&sc.districts.includes(F.district);}
+function deliversOn(sellerId,i){const sc=SCHEDULE[sellerId];if(!sc||!F.district)return true;const d=dateOptions()[i];const wd=new Date(d.iso+'T12:00:00').getDay();return sc.days.includes(wd);} // MVP: все хозяйства возят во все районы
 function farmDates(sellerId){return dateOptions().map((d,i)=>({...d,i})).filter(d=>deliversOn(sellerId,d.i));}
 function farmsForDistrict(){return D.sellers.filter(x=>SCHEDULE[x.id]?.districts.includes(F.district)).map(x=>({seller:x,dates:farmDates(x.id)})).filter(x=>x.dates.length).sort((a,b)=>a.dates[0].i-b.dates[0].i);}
 function cartSeller(){return C.ownerIds(S.cart,D.products)[0]||F.farm||'demo-a';}
