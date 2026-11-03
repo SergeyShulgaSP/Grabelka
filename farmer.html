@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fbf8f0">
+<title>Грабелька - кабинет фермера</title>
+<meta name="description" content="Кабинет фермера Грабельки: заказы, товары, наборы, доставка, документы, статистика и выплаты. Учебная версия.">
+<style>
+:root{--bg:#fbf8f0;--paper:#fffdf8;--ink:#2e2118;--muted:#827b70;--green:#416b33;--green-pale:#eaf0e2;--gold:#f1ba47;--line:#e4ddcf;--fill:#f0ebdf;--warn:#a74322;--warn-pale:#f8e6dc;--blue:#2c6aa0;--blue-pale:#e3eef8;--serif:Georgia,'Times New Roman',serif;--sans:Arial,Helvetica,sans-serif;--bottom:66px;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:#f0ede5;font-family:var(--sans);font-size:14px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}a{color:inherit;text-decoration:none}button:disabled{opacity:.45;cursor:not-allowed}
+img{display:block;max-width:100%}h1,h2,h3,p{margin:0}h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.15;letter-spacing:-.02em}h1{font-size:24px}h2{font-size:19px}h3{font-size:15px}
+:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+svg.icon{width:21px;height:21px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.shell{max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);box-shadow:0 0 80px #3428180a;padding-bottom:calc(var(--bottom) + 30px)}
+.shell.nonav{padding-bottom:30px}
+.top{display:flex;align-items:center;gap:10px;padding:12px 15px 6px;min-height:58px}
+.top .brand{display:flex;align-items:center;gap:8px;flex:1}.brand svg{width:26px;height:38px}.brand b{font-family:var(--serif);font-size:19px;color:var(--green)}.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.icon-btn{width:40px;height:40px;display:grid;place-items:center;border-radius:10px}
+.page-head{display:flex;align-items:center;gap:6px;padding:10px 8px 6px}.page-head h1{font-size:20px;flex:1}.page-head p{font-size:11px;color:var(--muted)}
+.pad{padding:0 15px}.section{margin:22px 0}.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.muted{color:var(--muted)}.small{font-size:11px}.tiny{font-size:10px}
+.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:9px;padding:10px 16px;font-weight:600;font-size:13px;background:linear-gradient(100deg,#efb944,#f5c247);box-shadow:inset 0 1px #ffdf8c,inset 0 0 0 1px #d9a43140;text-align:center;line-height:1.25}
+.btn.green{background:var(--green);color:#fff;box-shadow:none}.btn.ghost{background:var(--paper);box-shadow:inset 0 0 0 1px var(--line)}.btn.danger{background:var(--warn-pale);color:var(--warn);box-shadow:none}
+.btn.block{width:100%}.btn.sm{min-height:34px;padding:6px 12px;font-size:12px}
+.row{display:flex;gap:8px;align-items:center}.row>.btn{flex:1}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.card.flat{background:var(--fill);border-color:transparent}
+.notice{padding:12px;background:var(--fill);border-radius:9px;font-size:12px;line-height:1.45;display:flex;gap:9px;margin:12px 0}.notice.ok{background:var(--green-pale)}.notice.warn{background:var(--warn-pale);color:#5c2412}.notice.blue{background:var(--blue-pale)}
+.notice .icon{width:18px;height:18px}
+.field{display:block;margin-bottom:13px}.field>span{display:block;font-size:12px;font-weight:600;margin-bottom:5px}.field>span i{font-style:normal;color:var(--warn)}
+.field input,.field select,.field textarea{width:100%;min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:10px 11px;font-size:16px}
+.field textarea{min-height:70px;resize:vertical}.field .hint{display:block;font-size:11px;color:var(--muted);margin-top:4px}.field.bad input,.field.bad select,.field.bad textarea{border-color:var(--warn)}.field .err{display:none;font-size:11px;color:var(--warn);margin-top:4px}.field.bad .err{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{min-height:36px;padding:8px 12px;border-radius:10px;background:var(--fill);font-size:12px;border:1px solid transparent}.chip.on{background:var(--green);color:#fff}
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:3px;margin:6px 0 14px}.seg button,.seg a{flex:1;text-align:center;padding:9px 6px;border-radius:8px;font-size:12px;font-weight:600}.seg .on{background:var(--paper);box-shadow:0 1px 3px #0001}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;background:var(--fill);white-space:nowrap}
+.b-new{background:#fde9b8;color:#6b4a00}.b-accepted,.b-assembled{background:var(--blue-pale);color:var(--blue)}.b-delivering{background:#efe2fb;color:#5b2d8a}.b-done{background:var(--green-pale);color:var(--green)}.b-cancelled{background:var(--warn-pale);color:var(--warn)}.b-replace{background:#ffe0ef;color:#8a1f55}
+.order{display:block}.order-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.order-top strong{font-size:14px}.order p{font-size:12px;color:var(--muted);margin-top:4px}
+.tg{background:#dfe9f2;border-radius:14px;padding:12px;margin:14px 0}.tg-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:8px}.tg-ava{width:28px;height:28px;border-radius:50%;background:#2aa3e0;color:#fff;display:grid;place-items:center;font-size:13px}
+.tg-msg{background:#fff;border-radius:4px 12px 12px 12px;padding:10px 12px;font-size:12.5px;line-height:1.5;white-space:pre-line}.tg-btns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}.tg-btns button{background:#ffffffd9;border-radius:8px;padding:9px;font-size:12px;font-weight:600;color:#1f6fa8}
+.line{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.line:last-child{border-bottom:0}.line img{width:46px;height:46px;border-radius:8px;object-fit:cover;background:var(--fill)}.line .grow{flex:1;min-width:0}.line .grow b{display:block;font-size:13px}.line .grow span{font-size:11px;color:var(--muted)}
+.sum{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}.sum.total{font-weight:700;font-size:15px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px}
+.prod{display:flex;gap:11px;align-items:center}.prod img{width:62px;height:62px;border-radius:9px;object-fit:cover;background:var(--fill)}.prod .grow{flex:1;min-width:0}.prod b{font-size:13px;display:block}.prod span{font-size:11px;color:var(--muted);display:block}
+.stepper{display:flex;align-items:center;gap:4px}.stepper button{width:30px;height:30px;border-radius:8px;background:var(--fill);font-weight:700}.stepper output{min-width:28px;text-align:center;font-weight:700;font-size:13px}
+.photo-drop{display:flex;gap:12px;align-items:center;border:1.5px dashed var(--line);border-radius:10px;padding:10px;background:var(--paper);cursor:pointer}.photo-drop img,.photo-drop .ph{width:76px;height:76px;border-radius:8px;object-fit:cover;background:var(--fill);display:grid;place-items:center;color:var(--muted)}
+.check{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.check .dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex-shrink:0}.check.done .dot{background:var(--green);border-color:var(--green);color:#fff}.check .dot .icon{width:15px;height:15px}.check .grow{flex:1}.check b{font-size:13px;display:block}.check span{font-size:11px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px}.kpi{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:12px}.kpi span{font-size:11px;color:var(--muted);display:block}.kpi b{font-family:var(--serif);font-size:21px;display:block;margin-top:3px}.kpi i{font-style:normal;font-size:10px;color:var(--muted)}
+.bars{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:8px}.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}.bars i{display:block;width:100%;background:var(--green);border-radius:4px 4px 0 0;min-height:2px}.bars span{font-size:9px;color:var(--muted)}
+.stars{color:#d99a14;letter-spacing:1px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{border-radius:8px;padding:7px 2px;text-align:center;font-size:10px;background:var(--fill);color:var(--muted)}.day b{display:block;font-size:13px;color:var(--ink)}.day.on{background:var(--green-pale)}.day.on b{color:var(--green)}.day.closed{background:var(--warn-pale)}.day.closed b{color:var(--warn);text-decoration:line-through}
+.district{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.district input{width:20px;height:20px;accent-color:var(--green)}
+.nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:430px;background:#fbf8f0f5;backdrop-filter:blur(12px);display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);height:calc(var(--bottom) + env(safe-area-inset-bottom));padding:4px 6px calc(6px + env(safe-area-inset-bottom))}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:var(--muted);position:relative}.nav a.on{color:var(--green);font-weight:700}.nav .cnt{position:absolute;top:3px;left:55%;background:var(--warn);color:#fff;font-size:9px;font-weight:700;border-radius:9px;padding:1px 5px}
+.hero{margin:4px 15px 0;border-radius:14px;overflow:hidden;position:relative;background:var(--fill)}.hero img{width:100%;height:150px;object-fit:cover}.hero div{position:absolute;inset:auto 0 0 0;padding:14px;background:linear-gradient(transparent,#0009);color:#fff}.hero h1{font-size:21px}
+.demo{display:flex;gap:8px;align-items:flex-start;margin:8px 15px;padding:9px 11px;border-radius:9px;background:#fff6dc;font-size:11px;line-height:1.4}.demo .icon{width:16px;height:16px;color:#9a6b00}
+.toast{position:fixed;left:50%;bottom:calc(var(--bottom) + 18px);transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw}.toast.show{opacity:1;transform:translate(-50%,0)}
+dialog.sheet{border:0;padding:0;margin:auto auto 0;width:100%;max-width:430px;border-radius:16px 16px 0 0;background:var(--bg);max-height:88dvh}dialog.sheet::backdrop{background:#2e211866}.sheet-head{display:flex;align-items:center;padding:12px 15px;border-bottom:1px solid var(--line)}.sheet-head h2{flex:1;font-size:17px}.sheet-body{padding:15px;overflow:auto;max-height:calc(88dvh - 60px)}
+.act{background:#fff;border:1px solid var(--line);padding:18px;font-family:var(--serif);font-size:13px}.act h2{text-align:center;font-size:16px;margin-bottom:4px}.act table{width:100%;border-collapse:collapse;margin:12px 0;font-family:var(--sans);font-size:11.5px}.act td,.act th{border:1px solid #cfc6b5;padding:5px;text-align:left}.act td.r,.act th.r{text-align:right}
+.empty{text-align:center;padding:30px 20px;color:var(--muted)}.empty .icon{width:36px;height:36px;margin:0 auto 8px}
+.link{color:var(--green);font-weight:600;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+@media print{.nav,.top,.page-head,.demo,.no-print{display:none!important}.shell{box-shadow:none;padding:0}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="shell" id="shell"><main id="app"></main></div>
+<nav class="nav" id="nav" aria-label="Разделы кабинета"></nav>
+<dialog class="sheet" id="sheet"></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ===== Icons (same set as the storefront) ===== */
+const P={home:'M3 10.5 12 3l9 7.5M5.5 9v12h5v-7h3v7h5V9',basket:'M3 8h18l-2 13H5L3 8ZM7 8l5-6 5 6M8 12v5M12 12v5M16 12v5',user:'M16.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0M3 22v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2H3Z',grid:'M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h7v7h-7Z',list:'M8 5h13M8 12h13M8 19h13M3 5h.01M3 12h.01M3 19h.01',back:'M20 12H4M10 6l-6 6 6 6',chevron:'m9 5 7 7-7 7',arrow:'M4 12h16M14 6l6 6-6 6',plus:'M12 5v14M5 12h14',x:'m6 6 12 12M6 18 18 6',check:'m5 12 4 4 10-10',shield:'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6L12 2Zm-5 10 3 3 6-6',info:'M12 8h.01M12 11v6M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',warning:'m12 3 10 18H2L12 3ZM12 9v5M12 17h.01',trash:'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7',truck:'M1 4h13v13H1ZM14 9h4l4 5v3h-8M5 21a3 3 0 1 1 0-6 3 3 0 0 1 0 6M18 21a3 3 0 1 1 0-6 3 3 0 0 1 0 6',clock:'M12 7v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',calendar:'M3 5h18v16H3ZM7 2v6M17 2v6M3 10h18M7 14h2M13 14h2M7 18h2',leaf:'M3 21c2-9 7-13 16-17M4 16C1 5 9 1 22 2c-1 13-7 21-18 14Z',package:'m3 7 9-5 9 5v11l-9 5-9-5V7ZM3 7l9 5 9-5M12 12v11M7 4l10 6',credit:'M2 5h20v15H2ZM2 10h20M6 15h4',lock:'M5 10h14v12H5ZM8 10V6a4 4 0 0 1 8 0v4M12 15v3',document:'M4 2h11l5 5v15H4ZM14 2v6h6M8 12h8M8 16h8',refresh:'M21 4v6h-6M3 20v-6h6M4 8a8 8 0 0 1 13-4l4 6M3 14l4 6a8 8 0 0 0 13-4',chart:'M3 3v18h18M7 15v3M11 10v8M15 12v6M19 6v12',send:'M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z',camera:'M3 7h4l2-3h6l2 3h4v13H3ZM15.5 13a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0',swap:'M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7',star:'m12 2 3 7 7 .6-5.3 4.7 1.6 7.2L12 17.8 5.7 21.5l1.6-7.2L2 9.6 9 9Z',pin:'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0ZM15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',phone:'M5 2h4l2 5-3 2a11 11 0 0 0 7 7l2-3 5 2v4a2 2 0 0 1-2 2A18 18 0 0 1 3 4a2 2 0 0 1 2-2'};
+const ic=(n,c='')=>`<svg class="icon ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="${P[n]||P.leaf}"/></svg>`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ')+' ₽';
+const $=s=>document.querySelector(s);
+const MARKUP=0.20; // Грабелька: цена на сайте = цена фермера + 20%
+const sitePrice=p=>Math.round(p*(1+MARKUP));
+const farmerPart=t=>Math.round(t/(1+MARKUP));
+const DAY=864e5;
+const pad2=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const today=()=>{const d=new Date();d.setHours(12,0,0,0);return d;};
+const addDays=(d,n)=>new Date(d.getTime()+n*DAY);
+const WD=['вс','пн','вт','ср','чт','пт','сб'];
+const WDL=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const MONTHS=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const MONTHS_G=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const human=s=>{const d=new Date(s+'T12:00:00');return d.getDate()+' '+MONTHS_G[d.getMonth()]+', '+WD[d.getDay()];};
+const DISTRICTS=['Адмиралтейский','Василеостровский','Выборгский','Калининский','Кировский','Колпинский','Красногвардейский','Красносельский','Московский','Невский','Петроградский','Приморский','Фрунзенский','Центральный'];
+const SLOTS=['9:00–12:00','12:00–15:00','15:00–18:00','18:00–21:00'];
+const CATS={milk:'Молочное',eggs:'Яйца',meat:'Мясо',vegetables:'Овощи',cheese:'Сыры',honey:'Мёд'};
+const STATUS={new:'Новый',accepted:'Принят',assembled:'Собран',delivering:'В пути',done:'Доставлен',cancelled:'Отменён',replace:'Ждём ответа о замене'};
+// sheet stores human words for steps the storefront does not know yet
+const SHEET_WORD={assembled:'Собран фермером',replace:'Ждём ответа о замене'};
+const fromSheet=s=>{const m=Object.entries(SHEET_WORD).find(([,w])=>w===s);return m?m[0]:(STATUS[s]?s:'new');};
+const DOCS=[{id:'status',name:'ИП или самозанятый',hint:'Выписка ЕГРИП или справка «Мой налог»',required:true},{id:'vet',name:'Ветеринарные документы',hint:'ВСД из «Меркурия» на молоко, мясо, яйца',required:true},{id:'decl',name:'Декларация соответствия',hint:'Если есть. Ускоряет проверку',required:false},{id:'photos',name:'Фото хозяйства',hint:'Двор, животные, место хранения',required:true}];
+const TEMPLATES=[
+ {id:'trial',name:'Пробный',sub:'Познакомиться с фермой',slots:[{label:'Молоко',cat:'milk',q:{3:3,4:5,5:6}},{label:'Творог или кефир',cat:'milk',q:{3:3,4:3,5:5}},{label:'Яйца',cat:'eggs',q:{3:4,4:6,5:6}}]},
+ {id:'family',name:'Семейный',sub:'Базовые продукты на неделю',slots:[{label:'Молоко',cat:'milk',q:{3:3,4:4,5:6}},{label:'Творог',cat:'milk',q:{3:2,4:3,5:4}},{label:'Яйца',cat:'eggs',q:{3:3,4:4,5:5}},{label:'Овощи 1',cat:'vegetables',q:{3:3,4:3,5:3}},{label:'Овощи 2',cat:'vegetables',q:{3:2,4:3,5:2}}]},
+ {id:'meat',name:'Мясной',sub:'Для обедов и ужинов',slots:[{label:'Мясо 1',cat:'meat',q:{3:1,4:1,5:2}},{label:'Мясо 2',cat:'meat',q:{3:1,4:2,5:1}},{label:'Овощи 1',cat:'vegetables',q:{3:1,4:1,5:1}},{label:'Овощи 2',cat:'vegetables',q:{3:1,4:1,5:1}}]}];
+const SET_DISCOUNT=0.05, MIN_ORDER=2000;
+
+/* ===== Demo data (fictional farms and buyers, no real personal data) ===== */
+function seedProducts(fid){
+ const t=today(),d=n=>iso(addDays(t,n));
+ if(fid==='demo-b')return [
+  {id:'milk-b',name:'Молоко коровье сырое',category:'milk',price:184,unit:'1 л',photo:'img/products/milk-b.jpg',made:d(-1),expires:d(3),stock:30,composition:'Молоко коровье цельное',storage:'+2…+6 °C',active:true},
+  {id:'eggs-b',name:'Яйца куриные',category:'eggs',price:240,unit:'10 шт.',photo:'img/products/eggs-b.jpg',made:d(-2),expires:d(23),stock:40,composition:'Яйца куриные, категория С0',storage:'0…+20 °C',active:true}];
+ return [
+  {id:'milk',name:'Молоко коровье',category:'milk',price:140,unit:'1 л',photo:'img/products/milk.jpg',made:d(-1),expires:d(4),stock:40,composition:'Молоко коровье цельное, 3,4–6%',storage:'+2…+6 °C',active:true},
+  {id:'eggs',name:'Яйца куриные',category:'eggs',price:220,unit:'10 шт.',photo:'img/products/eggs.jpg',made:d(-2),expires:d(23),stock:60,composition:'Яйца куриные, категория С1',storage:'0…+20 °C',active:true},
+  {id:'beef',name:'Говядина, мякоть лопатки',category:'meat',price:1450,unit:'1 кг',photo:'img/products/beef.jpg',made:d(-3),expires:d(2),stock:8,composition:'Говядина охлаждённая',storage:'0…+4 °C',active:true},
+  {id:'carrot',name:'Морковь',category:'vegetables',price:100,unit:'500 г',photo:'img/products/carrot.jpg',made:d(-4),expires:d(26),stock:50,composition:'Морковь столовая',storage:'+1…+5 °C',active:true},
+  {id:'curd',name:'Творог 5%',category:'milk',price:265,unit:'500 г',photo:'img/products/curd.jpg',made:d(-1),expires:d(4),stock:20,composition:'Молоко коровье, закваска',storage:'+2…+6 °C',active:true},
+  {id:'onion',name:'Лук репчатый',category:'vegetables',price:95,unit:'500 г',photo:'img/products/onion.jpg',made:d(-6),expires:d(54),stock:45,composition:'Лук репчатый',storage:'+1…+10 °C',active:true},
+  {id:'pork',name:'Свинина, мякоть замороженная',category:'meat',price:440,unit:'500 г',photo:'img/products/pork.jpg',made:d(-12),expires:d(170),stock:14,composition:'Свинина замороженная',storage:'−18 °C',active:true},
+  {id:'brisket',name:'Говядина, грудинка',category:'meat',price:275,unit:'500 г',photo:'img/products/brisket.jpg',made:d(-3),expires:d(2),stock:0,composition:'Говядина охлаждённая',storage:'0…+4 °C',active:true}];
+}
+const BUYERS=['Анна','Мария К.','Ольга','Дмитрий','Екатерина','Ирина П.','Павел','Светлана','Наталья','Алексей','Юлия','Татьяна'];
+function seedOrders(fid,products){
+ const t=today(),byId=Object.fromEntries(products.map(p=>[p.id,p]));
+ const mk=(num,status,dayShift,buyer,lines,slot,extra={})=>{const items=lines.filter(([id])=>byId[id]).map(([id,q])=>({pid:id,name:byId[id].name,unit:byId[id].unit,price:sitePrice(byId[id].price),qty:q}));
+  return {id:num,num,status,deliveryDate:iso(addDays(t,dayShift)),slot,buyerName:buyer,buyerId:buyer,address:'ул. Примерная, д. '+(3+num.length%9)+' (пример)',phone:'+7 900 000-00-00',items,total:items.reduce((s,i)=>s+i.price*i.qty,0),demo:true,createdAt:addDays(t,Math.min(dayShift,0)-1).getTime(),...extra};};
+ const L=fid==='demo-b'?[['milk-b',3],['eggs-b',2]]:null;
+ const live=fid==='demo-b'?[mk('ГБ-2041','new',1,'Анна',L,'12:00–15:00')]:[
+  mk('ГБ-1052','new',1,'Мария К.',[['milk',3],['curd',2],['eggs',3],['carrot',3],['onion',2]],'18:00–21:00',{set:'Семейный на 3 человека'}),
+  mk('ГБ-1051','new',2,'Дмитрий',[['beef',1],['pork',1],['carrot',1],['onion',1],['brisket',1]],'12:00–15:00'),
+  mk('ГБ-1049','accepted',1,'Ольга',[['milk',4],['eggs',2],['curd',3]],'9:00–12:00'),
+  mk('ГБ-1047','delivering',0,'Анна',[['milk',3],['curd',3],['eggs',4]],'15:00–18:00',{set:'Пробный на 3 человека'})];
+ // history for stats and payouts: last ~75 days, deterministic
+ const hist=[];let seed=fid==='demo-b'?7:3;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+ const pool=products.filter(p=>p.price<1000).map(p=>p.id);
+ for(let i=1;i<=75;i++){const day=addDays(t,-i);const wd=day.getDay();if(fid==='demo-b'?![1,3,5].includes(wd):![2,4,6].includes(wd))continue;
+  const n=fid==='demo-b'?1:1+Math.floor(rnd()*3);
+  for(let k=0;k<n;k++){const lines=[];const cnt=2+Math.floor(rnd()*3);for(let j=0;j<cnt;j++){const id=pool[Math.floor(rnd()*pool.length)];if(!lines.some(l=>l[0]===id))lines.push([id,1+Math.floor(rnd()*4)]);}
+   if(rnd()<.25&&fid!=='demo-b')lines.push(['beef',1]);
+   const bi=Math.floor(rnd()*rnd()*45);const o=mk('ГБ-'+(900-hist.length),rnd()<.06?'cancelled':'done',-i,BUYERS[bi%BUYERS.length],lines,SLOTS[Math.floor(rnd()*4)],{buyerId:'b'+bi});hist.push(o);}}
+ return live.concat(hist);
+}
+function seedFarm(fid){
+ const a=fid==='demo-a';
+ const products=seedProducts(fid);
+ return {id:fid,name:a?'Тестовое хозяйство А':'Тестовое хозяйство Б',person:a?'Иван Петрович (пример)':'Мария Сергеевна (пример)',phone:a?'+7 900 000-00-01':'+7 900 000-00-02',
+  place:a?'Гатчинский район, д. Пример':'Всеволожский район, д. Пример',km:a?48:35,
+  story:a?'Семейная ферма с 2009 года. 22 коровы, куры на свободном выгуле, огород 2 га. Доим утром, в тот же день разливаем.':'Небольшое хозяйство: 8 коров и 150 кур. Молоко не пастеризуем, продаём сырым.',
+  photo:'img/hero-farmer.jpg',invited:true,
+  docs:{status:{state:'ok',file:'egrip.pdf'},vet:{state:'ok',file:'merkury-vsd.pdf'},decl:{state:'none'},photos:{state:'ok',file:'ferma-foto.zip'}},
+  delivery:{districts:a?['Выборгский','Калининский','Московский','Невский','Петроградский','Приморский','Фрунзенский','Центральный']:['Московский','Невский','Фрунзенский','Петроградский','Центральный','Калининский'],days:a?[2,4,6]:[1,3,5],slots:SLOTS.slice(),closed:[]},
+  products,sets:a?[{id:'s1',tpl:'family',size:3,picks:['milk','curd','eggs','carrot','onion'],state:'live'}]:[],
+  telegram:{connected:true,user:a?'@ivan_ferma_demo':'@maria_ferma_demo'},
+  orders:seedOrders(fid,products),
+  reviews:a?[{who:'Мария К.',stars:5,text:'Молоко вкусное, дата на бутылке вчерашняя. Привезли минута в минуту.',date:iso(addDays(today(),-4))},{who:'Ольга',stars:5,text:'Творог как в детстве. Будем брать каждую неделю.',date:iso(addDays(today(),-9))},{who:'Павел',stars:4,text:'Всё свежее, но морковь была мелковата.',date:iso(addDays(today(),-15))},{who:'Ирина П.',stars:5,text:'Заменили грудинку на лопатку, предупредили заранее. Спасибо!',date:iso(addDays(today(),-22))}]:[{who:'Анна',stars:5,text:'Сырое молоко - то, что искала.',date:iso(addDays(today(),-6))}],
+  joined:iso(addDays(today(),-80))};
+}
+function blankFarm(id,v){return {id,name:v.farm,person:v.person,phone:v.phone,place:v.place||'',km:'',story:'',photo:'',invited:false,docs:{status:{state:'none'},vet:{state:'none'},decl:{state:'none'},photos:{state:'none'}},delivery:{districts:[],days:[],slots:SLOTS.slice(),closed:[]},products:[],sets:[],telegram:{connected:false},orders:[],reviews:[],joined:iso(today())};}
+
+/* ===== State ===== */
+const KEY='grabelka.farmer.v1';
+let S;try{S=JSON.parse(localStorage.getItem(KEY)||'null');}catch{S=null;}
+if(!S||S.v!==1)S={v:1,session:null,launched:false,farms:{},leads:[]};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch{toast('Браузер не сохранил данные: мало места');}};
+const farm=()=>S.session&&S.farms[S.session];
+function ensureDemo(fid){if(!S.farms[fid])S.farms[fid]=seedFarm(fid);return S.farms[fid];}
+const verified=f=>DOCS.filter(d=>d.required).every(d=>f.docs[d.id]?.state==='ok');
+const deliveryReady=f=>f.delivery.districts.length&&f.delivery.days.length;
+const profileReady=f=>f.story.trim().length>=30&&f.photo;
+const activeProducts=f=>f.products.filter(p=>p.active&&p.stock>0);
+
+/* ===== Google Sheet link (same Apps Script as the storefront) ===== */
+const CFG=window.GRABELKA_CONFIG||{};const SHEET=CFG.backend==='sheets'&&CFG.sheetsUrl;
+let sheetOrders=[];let sheetState=SHEET?'loading':'off';
+async function loadSheet(){if(!SHEET||!farm())return;try{const r=await fetch(SHEET+(SHEET.includes('?')?'&':'?')+'action=all&t='+Date.now());const j=await r.json();if(!j.ok)throw 0;
+ sheetOrders=j.docs.filter(d=>d.coll==='orders'&&d.data&&d.data.farmId===S.session).map(d=>({...d.data,id:d.id,num:d.data.num||d.id,status:fromSheet(d.data.status),items:(d.data.items||[]).map(i=>({...i})),fromSheet:true,buyerId:d.data.phone||d.data.buyerName}));sheetState='ok';}catch(e){sheetState='error';}
+ if(['orders','home'].includes(route().name))render();}
+async function pushSheet(id,data){if(!SHEET)return;try{const r=await fetch(SHEET,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({op:'update',coll:'orders',id,data})});const j=await r.json();if(!j.ok)throw new Error(j.error);}catch(e){toast('Таблица не ответила, статус сохранён только здесь');}}
+async function sendLead(v){if(!SHEET)return;try{await fetch(SHEET,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({op:'set',coll:'leads',id:'F'+Date.now().toString(36),data:{kind:'Фермер',district:v.place,phone:v.phone,farm:v.farm,person:v.person,goods:v.goods,createdAt:new Date().toLocaleString('ru-RU')}})});}catch(e){}}
+function allOrders(f){return sheetOrders.concat(f.orders);}
+function findOrder(id){const f=farm();return allOrders(f).find(o=>o.id===id);}
+function setStatus(o,st,extra={}){Object.assign(o,{status:st},extra);if(o.fromSheet){pushSheet(o.id,{status:SHEET_WORD[st]||st,items:o.items,total:o.total,commission:Math.round(o.total*0.2),prevStatus:o.prevStatus||''});}save();}
+
+/* ===== UI helpers ===== */
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2600);}
+function head(title,sub='',backTo=''){return `<header class="page-head">${backTo?`<a class="icon-btn" href="#/${backTo}" aria-label="Назад">${ic('back')}</a>`:'<span style="width:8px"></span>'}<div style="flex:1"><h1>${esc(title)}</h1>${sub?`<p>${esc(sub)}</p>`:''}</div></header>`;}
+function brandTop(){const f=farm();return `<header class="top"><a class="brand" href="#/home"><svg viewBox="0 0 32 48" aria-hidden="true"><g fill="none" stroke="#426a31" stroke-width="2"><path d="M16 26V10M16 16C5 15 3 9 4 4c8 0 14 5 12 12ZM16 10C17 3 23 1 29 2c0 8-6 13-13 8Z"/><path d="M8 8l8 10M24 5l-8 10"/></g><g fill="#39291c"><path d="M4 24h3v10h3V22h3v12h3V23h3v12c0 5-4 7-6 7v6h-4v-6c-3-1-5-4-5-7Z"/></g></svg><span><b>Грабелька</b><small>Кабинет фермера</small></span></a>${f?`<a class="icon-btn" href="#/farm" aria-label="Профиль фермы">${ic('user')}</a>`:''}</header>`;}
+const demoBar=()=>`<div class="demo">${ic('info')}<span>Учебная версия. Фермы, покупатели и телефоны вымышленные, SMS и Telegram имитируются. Данные кабинета хранятся в этом браузере.</span></div>`;
+const badge=st=>`<span class="badge b-${st}">${esc(STATUS[st]||st)}</span>`;
+function sheet(title,body){const d=$('#sheet');d.innerHTML=`<div class="sheet-head"><h2>${esc(title)}</h2><button class="icon-btn" data-act="close-sheet" aria-label="Закрыть">${ic('x')}</button></div><div class="sheet-body">${body}</div>`;if(!d.open)d.showModal();}
+const closeSheet=()=>{const d=$('#sheet');if(d.open)d.close();};
+function route(){const [name,id]=(location.hash.replace(/^#\/?/,'')||'home').split('/');return {name,id:id?decodeURIComponent(id):''};}
+const go=r=>{location.hash='/'+r;};
+
+/* ===== Login and onboarding (Sofia: first we add farmers ourselves, after launch they sign up alone) ===== */
+let L={step:'phone',phone:'',mode:'login'};
+function renderLogin(){
+ const tabs=`<div class="seg"><button class="${L.mode==='login'?'on':''}" data-act="lmode" data-v="login">У меня есть доступ</button><button class="${L.mode==='join'?'on':''}" data-act="lmode" data-v="join">Хочу продавать</button></div>`;
+ let body='';
+ if(L.mode==='login'){
+  body=L.step==='phone'?`<form id="f-phone"><label class="field"><span>Телефон, который вы дали менеджеру</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-01" value="${esc(L.phone)}" required></label><button class="btn block">Получить код по SMS</button></form>
+   <div class="notice blue">${ic('info')}<div>Для демонстрации: <b>+7 900 000-00-01</b> - Тестовое хозяйство А, <b>+7 900 000-00-02</b> - Тестовое хозяйство Б. Код любой из 4 цифр.</div></div>`
+  :`<form id="f-code"><p class="small muted" style="margin-bottom:10px">Код отправлен на ${esc(L.phone)}. В учебной версии подойдёт любой, например 1234.</p><label class="field"><span>Код из SMS</span><input name="code" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="one-time-code" required autofocus></label><button class="btn block">Войти</button></form><button class="link" style="margin-top:12px" data-act="lback">${ic('back')}Другой номер</button>`;
+ }else if(!S.launched){
+  body=`<div class="notice">${ic('info')}<div>Сейчас мы подключаем фермеров сами: менеджер позвонит, поможет заполнить профиль и первые товары, а потом даст вход по телефону.</div></div>
+  <form id="f-lead">${leadFields()}<button class="btn block">Оставить заявку</button></form>
+  <button class="link" style="margin-top:14px" data-act="launch" data-v="1">${ic('arrow')}Показать, как будет после запуска</button>`;
+ }else{
+  body=`<div class="notice ok">${ic('check')}<div>Площадка запущена: регистрируйтесь сами. Продавать можно после проверки документов.</div></div>
+  <form id="f-signup">${leadFields(true)}<button class="btn block green">Зарегистрироваться</button></form>
+  <button class="link" style="margin-top:14px" data-act="launch" data-v="0">${ic('back')}Вернуть режим «до запуска»</button>`;
+ }
+ return `${brandTop()}<div class="hero"><img src="img/hero-farmer.jpg" alt=""><div><h1>Продавайте в Петербург без посредников-перекупщиков</h1></div></div>
+ <div class="pad section"><div class="kpis" style="margin-bottom:16px"><div class="kpi"><span>Комиссия</span><b>20%</b><i>только с проданного</i></div><div class="kpi"><span>Выплата</span><b>раз в месяц</b><i>по акту</i></div></div>${tabs}${body}</div>${demoBar()}`;
+}
+function leadFields(full){return `<label class="field"><span>Название хозяйства <i>*</i></span><input name="farm" required maxlength="60" placeholder="Например, Ферма у реки"></label>
+ <label class="field"><span>Как к вам обращаться <i>*</i></span><input name="person" required maxlength="60" autocomplete="name"></label>
+ <label class="field"><span>Телефон <i>*</i></span><input name="phone" type="tel" required inputmode="tel" autocomplete="tel" placeholder="+7 ..."></label>
+ <label class="field"><span>Где хозяйство <i>*</i></span><input name="place" required maxlength="80" placeholder="Район, деревня"></label>
+ ${full?'':`<label class="field"><span>Что производите</span><input name="goods" maxlength="120" placeholder="Молоко, творог, яйца"></label>`}
+ <p class="tiny muted" style="margin:-4px 0 12px">Нажимая кнопку, вы соглашаетесь на обработку данных. В учебной версии не вводите настоящий телефон.</p>`;}
+const normPhone=s=>String(s).replace(/\D/g,'').replace(/^8/,'7');
+
+/* ===== Home: onboarding checklist, Telegram preview, today ===== */
+function renderHome(){
+ const f=farm(),os=allOrders(f);const fresh=os.filter(o=>o.status==='new');const ver=verified(f);
+ const steps=[['farm','Профиль фермы','История и фото хозяйства',profileReady(f)],['docs','Документы','Проверка командой Грабельки',ver],['delivery','Доставка','Районы, дни и закрытые даты',deliveryReady(f)],['products','Товары','Хотя бы один товар в продаже',activeProducts(f).length>0],['sets','Наборы','Набор по шаблону, по желанию',f.sets.length>0],['telegram','Telegram','Уведомления о заказах',f.telegram.connected]];
+ const doneN=steps.filter(s=>s[3]).length;
+ const onboarding=doneN<steps.length?`<section class="section"><div class="section-head"><h2>Подключение: ${doneN} из ${steps.length}</h2></div><div class="card">${steps.map(([r,t,s,ok])=>`<a class="check ${ok?'done':''}" href="#/${r==='telegram'?'farm':r}"><span class="dot">${ok?ic('check'):''}</span><span class="grow"><b>${t}</b><span>${s}</span></span>${ic('chevron')}</a>`).join('')}</div>${!ver?`<div class="notice warn">${ic('lock')}<div>Покупатели не видят ваши товары, пока команда не проверит документы. Обычно это 1–2 рабочих дня.</div></div>`:''}</section>`:'';
+ const tg=fresh[0]&&f.telegram.connected?tgCard(fresh[0]):'';
+ const t=iso(today()),tomorrow=iso(addDays(today(),1));
+ const todayList=os.filter(o=>['accepted','assembled','delivering','replace'].includes(o.status)&&o.deliveryDate<=tomorrow).sort((a,b)=>a.deliveryDate.localeCompare(b.deliveryDate));
+ const monthDone=os.filter(o=>o.status==='done'&&o.deliveryDate.slice(0,7)===t.slice(0,7));
+ return `${brandTop()}<div class="pad"><h1 style="margin:6px 0 2px">${esc(f.name)}</h1><p class="small muted">${ver?`<span class="badge b-done">${ic('shield')}Проверен</span>`:'<span class="badge b-new">Ждёт проверки</span>'} ${esc(f.place)}</p>
+ ${onboarding}
+ ${tg?`<section class="section"><div class="section-head"><h2>Новый заказ</h2><span class="tiny muted">так он придёт в Telegram</span></div>${tg}</section>`:''}
+ <section class="section"><div class="section-head"><h2>Сегодня и завтра</h2><a class="link" href="#/orders">Все заказы ${ic('chevron')}</a></div>${todayList.length?todayList.map(orderCard).join(''):`<div class="card flat small muted">Нет принятых заказов на сегодня и завтра.</div>`}</section>
+ <section class="section"><div class="kpis"><a class="kpi" href="#/orders"><span>Новых заказов</span><b>${fresh.length}</b><i>ждут ответа</i></a><a class="kpi" href="#/money"><span>Ваша часть за ${MONTHS[today().getMonth()]}</span><b>${money(monthDone.reduce((s,o)=>s+farmerPart(o.total),0))}</b><i>выплата по акту</i></a></div></section>
+ ${sheetNote()}</div>${demoBar()}`;
+}
+function sheetNote(){if(sheetState==='off')return '';if(sheetState==='loading')return `<p class="tiny muted">Загружаем заказы с сайта из Google Таблицы…</p>`;if(sheetState==='error')return `<div class="notice warn">${ic('warning')}<div>Google Таблица не ответила. Показываем примеры заказов.</div></div>`;
+ return `<p class="tiny muted">${sheetOrders.length?`Заказов с сайта из Google Таблицы: ${sheetOrders.length}. Статусы, которые вы ставите здесь, записываются в таблицу.`:'Заказов с сайта для этой фермы в Google Таблице пока нет, показываем примеры. Оформите тестовый заказ на сайте у этой фермы, и он появится здесь.'}</p>`;}
+function tgCard(o){const n=o.items.reduce((s,i)=>s+i.qty,0);return `<div class="tg"><div class="tg-head"><span class="tg-ava">Г</span>Грабелька · бот для фермеров</div><div class="tg-msg"><b>Новый заказ ${esc(o.num)}</b>${o.set?`\nНабор: ${esc(o.set)}`:''}
+${human(o.deliveryDate)}, ${esc(o.slot)}
+${o.items.map(i=>`· ${esc(i.name)} × ${i.qty}`).join('\n')}
+Позиций: ${n}. Ваша часть: <b>${money(farmerPart(o.total))}</b>
+Ответьте, пожалуйста, до 20:00</div><div class="tg-btns"><button data-act="accept" data-id="${esc(o.id)}">✅ Принять</button><button data-act="decline" data-id="${esc(o.id)}">❌ Отказаться</button></div></div>`;}
+function orderCard(o){return `<a class="card order" href="#/order/${encodeURIComponent(o.id)}"><div class="order-top"><strong>${esc(o.num)} · ${esc(o.buyerName||'Покупатель')}</strong>${badge(o.status)}</div><p>${human(o.deliveryDate)}, ${esc(o.slot||'')} · ${o.items.length} поз. · ваша часть ${money(farmerPart(o.total))}${o.fromSheet?' · с сайта':o.demo?' · пример':''}</p></a>`;}
+
+/* ===== Orders ===== */
+let OF='active';
+function renderOrders(){const f=farm(),os=allOrders(f);
+ const groups={new:os.filter(o=>o.status==='new'),active:os.filter(o=>['accepted','assembled','delivering','replace'].includes(o.status)),done:os.filter(o=>['done','cancelled'].includes(o.status))};
+ const list=groups[OF].sort((a,b)=>OF==='done'?b.deliveryDate.localeCompare(a.deliveryDate):a.deliveryDate.localeCompare(b.deliveryDate));
+ return `${head('Заказы','Один заказ = один фермер, везёте сами')}<div class="pad"><div class="seg">${[['new','Новые'],['active','В работе'],['done','Архив']].map(([k,t])=>`<button class="${OF===k?'on':''}" data-act="ofilter" data-v="${k}">${t} (${groups[k].length})</button>`).join('')}</div>
+ ${list.length?list.slice(0,OF==='done'?40:99).map(orderCard).join(''):`<div class="empty">${ic('basket')}<p>Здесь пока пусто</p></div>`}${sheetNote()}</div>`;}
+function renderOrder(id){const f=farm(),o=findOrder(id);if(!o)return notFound();
+ const byId=Object.fromEntries(f.products.map(p=>[p.id,p]));
+ const items=o.items.map((i,k)=>{const p=byId[i.pid];const rep=i.replace;return `<div class="line"><img src="${esc(p?.photo||'img/products/milk.jpg')}" alt=""><div class="grow"><b>${esc(i.name)} × ${i.qty}</b><span>${esc(i.unit||'')} · ${money(farmerPart(i.price*i.qty))} ваша часть</span>${rep?`<span class="badge b-replace" style="margin-top:4px">Предложена замена: ${esc(rep.name)} × ${rep.qty}</span>`:''}${i.removed?`<span class="badge b-cancelled" style="margin-top:4px">Убрано: покупатель отказался от замены</span>`:''}</div>${['new','accepted'].includes(o.status)&&!rep&&!i.removed?`<button class="btn ghost sm" data-act="no-stock" data-id="${esc(o.id)}" data-k="${k}">Нет в наличии</button>`:''}</div>`;}).join('');
+ const rep=o.items.some(i=>i.replace);
+ const next={accepted:['assembled','Заказ собран'],assembled:['delivering','Выехал к покупателю'],delivering:['done','Доставлен']}[o.status];
+ return `${head('Заказ '+o.num,(o.fromSheet?'С сайта, из Google Таблицы':'Пример')+' · '+STATUS[o.status],'orders')}<div class="pad">
+ <div class="card"><div class="order-top"><strong>${human(o.deliveryDate)}, ${esc(o.slot||'')}</strong>${badge(o.status)}</div><p class="small" style="margin-top:8px">${esc(o.buyerName||'')} · ${esc(o.phone||'')}<br>${esc(o.address||'')}</p>${o.set?`<p class="small muted" style="margin-top:6px">Набор: ${esc(o.set)}</p>`:''}${o.declineReason?`<p class="small" style="margin-top:6px;color:var(--warn)">Причина отказа: ${esc(o.declineReason)}</p>`:''}</div>
+ <section class="section"><h2 style="margin-bottom:6px">Состав</h2><div class="card">${items}</div>
+ <div class="card flat"><div class="sum"><span>Сумма для покупателя</span><span>${money(o.total)}</span></div><div class="sum"><span>Грабелька, 20% к вашей цене</span><span>−${money(o.total-farmerPart(o.total))}</span></div><div class="sum total"><span>Ваша часть</span><span>${money(farmerPart(o.total))}</span></div></div></section>
+ ${o.status==='new'?`<div class="row"><button class="btn danger" data-act="decline" data-id="${esc(o.id)}">Отказаться</button><button class="btn green" data-act="accept" data-id="${esc(o.id)}">Принять заказ</button></div>`:''}
+ ${o.status==='replace'||rep?`<div class="notice">${ic('swap')}<div>Покупатель получил SMS с предложением замены. В учебной версии ответьте за него:</div></div><div class="row"><button class="btn ghost" data-act="rep-no" data-id="${esc(o.id)}">Покупатель отказался</button><button class="btn" data-act="rep-yes" data-id="${esc(o.id)}">Покупатель согласен</button></div>`:''}
+ ${next&&!rep?`<button class="btn block green" data-act="status" data-id="${esc(o.id)}" data-v="${next[0]}">${ic('check')}${next[1]}</button><p class="tiny muted" style="margin-top:6px">Покупатель видит статус в профиле на сайте.</p>`:''}
+ ${o.status==='done'?`<div class="notice ok">${ic('check')}<div>Заказ доставлен и попадёт в акт за ${MONTHS[new Date(o.deliveryDate).getMonth()]}.</div></div>`:''}
+ </div>`;}
+function noStock(o,k){const f=farm(),it=o.items[k],cur=f.products.find(p=>p.id===it.pid);
+ const inOrder=new Set(o.items.filter(i=>!i.removed).map(i=>i.pid));const alts=f.products.filter(p=>!inOrder.has(p.id)&&p.active&&p.stock>0).sort((x,y)=>(y.category===cur?.category)-(x.category===cur?.category));
+ sheet('Нет в наличии: '+it.name,`<p class="small" style="margin-bottom:10px">Предложите покупателю замену. Он получит SMS и подтвердит. Если откажется, позиция уберётся из заказа и сумма пересчитается.</p>
+ ${alts.length?alts.map(p=>`<button class="card prod" style="width:100%;text-align:left" data-act="pick-rep" data-id="${esc(o.id)}" data-k="${k}" data-p="${esc(p.id)}"><img src="${esc(p.photo)}" alt=""><span class="grow"><b>${esc(p.name)}</b><span>${esc(p.unit)} · ${money(sitePrice(p.price))} для покупателя · остаток ${p.stock}</span></span>${ic('chevron')}</button>`).join(''):`<div class="card flat small">Других товаров в наличии нет.</div>`}
+ <button class="btn ghost block" style="margin-top:6px" data-act="drop-item" data-id="${esc(o.id)}" data-k="${k}">Без замены: убрать позицию</button>`);}
+function recalc(o){o.total=o.items.filter(i=>!i.removed).reduce((s,i)=>s+i.price*i.qty,0);}
+
+/* ===== Products ===== */
+let PTAB='products';
+function renderProducts(){const f=farm();const ver=verified(f);
+ const tabs=`<div class="seg"><a class="${PTAB==='products'?'on':''}" href="#/products">Товары (${f.products.length})</a><a class="${PTAB==='sets'?'on':''}" href="#/sets">Наборы (${f.sets.length})</a></div>`;
+ return `${head('Витрина',ver?'Покупатели видят товары с остатком больше 0':'Товары появятся у покупателей после проверки')}<div class="pad">${tabs}
+ <a class="btn block" href="#/product-new">${ic('plus')}Добавить товар</a>
+ <section class="section">${f.products.length?f.products.map(p=>{const fresh=Math.round((today()-new Date(p.made+'T12:00:00'))/DAY);const left=Math.round((new Date(p.expires+'T12:00:00')-today())/DAY);return `<div class="card"><div class="prod"><img src="${esc(p.photo)}" alt=""><div class="grow"><b>${esc(p.name)}</b><span>${esc(p.unit)} · ваша цена ${money(p.price)} · на сайте ${money(sitePrice(p.price))}</span><span>Произведено ${fresh<=0?'сегодня':fresh===1?'вчера':fresh+' дн. назад'} · ${left<0?'<b style="color:var(--warn)">срок истёк</b>':left<=1?'<b style="color:var(--warn)">годен '+(left?'до завтра':'до сегодня')+'</b>':'годен ещё '+left+' дн.'}</span></div><a class="icon-btn" href="#/product/${encodeURIComponent(p.id)}" aria-label="Изменить">${ic('chevron')}</a></div>
+ <div class="row" style="margin-top:10px;justify-content:space-between"><span class="small">${!p.active?'<span class="badge">Скрыт</span>':p.stock<=0?'<span class="badge b-cancelled">Нет в наличии</span>':!ver?'<span class="badge b-new">Ждёт проверки</span>':'<span class="badge b-done">В продаже</span>'}</span><span class="row small">Остаток <span class="stepper"><button data-act="stock" data-p="${esc(p.id)}" data-v="-1" aria-label="Меньше">−</button><output>${p.stock}</output><button data-act="stock" data-p="${esc(p.id)}" data-v="1" aria-label="Больше">+</button></span></span></div></div>`;}).join(''):`<div class="empty">${ic('package')}<p>Добавьте первый товар. Фото и дата производства обязательны: так покупатель видит, что продукт свежий.</p></div>`}</section></div>`;}
+let draftPhoto=null;
+function renderProductForm(id){const f=farm(),p=id?f.products.find(x=>x.id===id):null;if(id&&!p)return notFound();draftPhoto=p?p.photo:null;const v=p||{category:'milk',made:iso(today()),active:true};
+ const fld=(n,label,input,hint='')=>`<label class="field" data-f="${n}"><span>${label} <i>*</i></span>${input}${hint?`<span class="hint">${hint}</span>`:''}<span class="err"></span></label>`;
+ return `${head(p?'Изменить товар':'Новый товар','Все поля обязательные','products')}<div class="pad"><form id="f-product" novalidate>
+ <div class="field" data-f="photo"><span>Фото товара <i>*</i></span><label class="photo-drop">${draftPhoto?`<img id="ph-img" src="${esc(draftPhoto)}" alt="">`:`<span class="ph" id="ph-img">${ic('camera')}</span>`}<span class="small"><b>Сфотографировать или выбрать</b><br><span class="muted">Своё фото, не из интернета. Видно упаковку и этикетку.</span></span><input type="file" accept="image/*" capture="environment" id="ph-input" hidden></label><span class="err"></span></div>
+ ${fld('name','Название',`<input name="name" maxlength="60" value="${esc(v.name||'')}" placeholder="Творог 9%">`)}
+ <div class="grid2">${fld('category','Категория',`<select name="category">${Object.entries(CATS).map(([k,t])=>`<option value="${k}" ${v.category===k?'selected':''}>${t}</option>`).join('')}</select>`)}
+ ${fld('unit','Вес или объём',`<input name="unit" maxlength="20" value="${esc(v.unit||'')}" placeholder="500 г">`)}</div>
+ <div class="grid2">${fld('price','Ваша цена, ₽',`<input name="price" type="number" inputmode="numeric" min="1" max="100000" value="${esc(v.price||'')}">`,`<span id="site-price">${v.price?'На сайте: '+money(sitePrice(v.price)):'На сайте +20%'}</span>`)}
+ ${fld('stock','Остаток, шт.',`<input name="stock" type="number" inputmode="numeric" min="0" max="9999" value="${esc(v.stock??'')}">`)}</div>
+ <div class="grid2">${fld('made','Дата производства',`<input name="made" type="date" max="${iso(today())}" value="${esc(v.made||'')}">`,'Для покупателя главное отличие')}
+ ${fld('expires','Годен до',`<input name="expires" type="date" value="${esc(v.expires||'')}">`)}</div>
+ ${fld('composition','Состав',`<textarea name="composition" maxlength="200" placeholder="Молоко коровье, закваска">${esc(v.composition||'')}</textarea>`)}
+ ${fld('storage','Условия хранения',`<input name="storage" maxlength="60" value="${esc(v.storage||'')}" placeholder="+2…+6 °C">`)}
+ <label class="district" style="border:0"><input type="checkbox" name="active" ${v.active?'checked':''}>Показывать покупателям</label>
+ <button class="btn block green">${p?'Сохранить':'Добавить в витрину'}</button>${p?`<button type="button" class="btn danger block" style="margin-top:8px" data-act="del-product" data-p="${esc(p.id)}">${ic('trash')}Удалить товар</button>`:''}
+ </form></div>`;}
+function checkProduct(form){const v=Object.fromEntries(new FormData(form).entries());const err={};
+ if(!draftPhoto)err.photo='Добавьте фото';
+ if(!v.name.trim())err.name='Введите название';
+ if(!v.unit.trim())err.unit='Например, 1 л или 500 г';
+ const price=Number(v.price);if(!(price>0))err.price='Цена больше 0';
+ const stock=Number(v.stock);if(v.stock===''||!(stock>=0)||!Number.isInteger(stock))err.stock='Целое число, можно 0';
+ if(!v.made)err.made='Укажите дату';else if(v.made>iso(today()))err.made='Дата не может быть в будущем';
+ if(!v.expires)err.expires='Укажите срок';else if(v.made&&v.expires<v.made)err.expires='Раньше даты производства';
+ if(!v.composition.trim())err.composition='Напишите состав';
+ if(!v.storage.trim())err.storage='Например, +2…+6 °C';
+ form.querySelectorAll('[data-f]').forEach(el=>{const e=err[el.dataset.f];el.classList.toggle('bad',!!e);el.querySelector('.err').textContent=e||'';});
+ return Object.keys(err).length?null:{...v,price,stock,active:!!v.active,photo:draftPhoto};}
+function readPhoto(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const k=Math.min(1,640/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.8));};img.onerror=rej;img.src=r.result;};r.onerror=rej;r.readAsDataURL(file);});}
+
+/* ===== Sets by template ===== */
+let SETDRAFT=null;
+function setPrice(f,s){const t=TEMPLATES.find(x=>x.id===s.tpl);const by=Object.fromEntries(f.products.map(p=>[p.id,p]));let sum=0;t.slots.forEach((sl,i)=>{const p=by[s.picks[i]];if(p)sum+=sitePrice(p.price)*sl.q[s.size];});return {sum,price:Math.round(sum*(1-SET_DISCOUNT))};}
+function renderSets(){const f=farm();PTAB='sets';
+ const tabs=`<div class="seg"><a href="#/products">Товары (${f.products.length})</a><a class="on" href="#/sets">Наборы (${f.sets.length})</a></div>`;
+ return `${head('Витрина','Наборы на 3, 4 и 5 человек')}<div class="pad">${tabs}
+ <p class="small muted" style="margin-bottom:12px">Шаблон набора задаёт Грабелька: что в нём лежит и сколько. Вы подставляете свои товары. Покупатель получает скидку ${SET_DISCOUNT*100}%, а вы - заказ от ${money(MIN_ORDER)}.</p>
+ ${f.sets.map(s=>{const t=TEMPLATES.find(x=>x.id===s.tpl),pr=setPrice(f,s);return `<div class="card"><div class="order-top"><strong>${esc(t.name)} на ${s.size} ${s.size===5?'человек':'человека'}</strong><span class="badge ${s.state==='live'?'b-done':'b-new'}">${s.state==='live'?'В продаже':'На проверке'}</span></div><p class="small muted" style="margin-top:4px">${money(pr.price)} для покупателя · ваша часть ${money(farmerPart(pr.price))}</p><div class="row" style="margin-top:8px"><a class="btn ghost sm" href="#/set/${esc(s.id)}">Изменить</a>${s.state!=='live'?`<button class="btn sm" data-act="set-approve" data-id="${esc(s.id)}">Одобрить (за команду)</button>`:''}</div></div>`;}).join('')}
+ <h2 style="margin:18px 0 10px">Шаблоны</h2>${TEMPLATES.map(t=>`<a class="card prod" href="#/set/new-${t.id}"><span class="grow"><b>${t.name}</b><span>${t.sub} · ${t.slots.map(s=>s.label).join(', ')}</span></span>${ic('plus')}</a>`).join('')}</div>`;}
+function renderSetForm(id){const f=farm();
+ if(!SETDRAFT||SETDRAFT.key!==id){if(id.startsWith('new-')){const t=TEMPLATES.find(x=>'new-'+x.id===id);if(!t)return notFound();SETDRAFT={key:id,tpl:t.id,size:3,picks:[]};t.slots.forEach(sl=>{const used=SETDRAFT.picks;SETDRAFT.picks.push((f.products.find(p=>p.category===sl.cat&&p.active&&!used.includes(p.id))||f.products.find(p=>p.category===sl.cat&&p.active))?.id||'');});}else{const s=f.sets.find(x=>x.id===id);if(!s)return notFound();SETDRAFT={key:id,...JSON.parse(JSON.stringify(s))};}}
+ const s=SETDRAFT,t=TEMPLATES.find(x=>x.id===s.tpl),pr=setPrice(f,s);const by=Object.fromEntries(f.products.map(p=>[p.id,p]));const missing=s.picks.some(p=>!by[p]);
+ return `${head('Набор «'+t.name+'»',t.sub,'sets')}<div class="pad"><div class="seg">${[3,4,5].map(n=>`<button class="${s.size===n?'on':''}" data-act="set-size" data-v="${n}">на ${n} ${n===5?'человек':'человека'}</button>`).join('')}</div>
+ ${t.slots.map((sl,i)=>{const opts=f.products.filter(p=>p.category===sl.cat);return `<label class="field"><span>${esc(sl.label)} × ${sl.q[s.size]}</span><select data-act="set-pick" data-i="${i}">${opts.length?'<option value="">Выберите товар</option>'+opts.map(p=>`<option value="${esc(p.id)}" ${s.picks[i]===p.id?'selected':''}>${esc(p.name)}, ${esc(p.unit)} - ${money(sitePrice(p.price))}</option>`).join(''):`<option value="">Нет товаров «${CATS[sl.cat]}». Добавьте их на вкладке «Товары»</option>`}</select></label>`;}).join('')}
+ <div class="card flat"><div class="sum"><span>По отдельности</span><span>${money(pr.sum)}</span></div><div class="sum"><span>Скидка набора ${SET_DISCOUNT*100}%</span><span>−${money(pr.sum-pr.price)}</span></div><div class="sum total"><span>Цена набора</span><span>${money(pr.price)}</span></div><div class="sum"><span>Ваша часть</span><span>${money(farmerPart(pr.price))}</span></div></div>
+ ${pr.price&&pr.price<MIN_ORDER?`<div class="notice warn">${ic('warning')}<div>Набор дешевле минимального заказа ${money(MIN_ORDER)}. Покупателю придётся докладывать товары. Выберите товары крупнее или размер побольше.</div></div>`:''}
+ <button class="btn block green" data-act="set-save" ${missing?'disabled':''}>Отправить на проверку</button>${!s.key.startsWith('new-')?`<button class="btn danger block" style="margin-top:8px" data-act="set-del">Удалить набор</button>`:''}
+ <p class="tiny muted" style="margin-top:8px">Команда проверит, что набор сытный и цена честная, и включит его на главной.</p></div>`;}
+
+/* ===== Delivery ===== */
+function renderDelivery(){const f=farm(),d=f.delivery;
+ const days=Array.from({length:14},(_,i)=>addDays(today(),i+1));
+ return `${head('Доставка','Вы везёте сами. Покупатель видит только ваши дни и районы')}<div class="pad">
+ <section class="section"><h2 style="margin-bottom:8px">Дни недели</h2><div class="chips">${[1,2,3,4,5,6,0].map(w=>`<button class="chip ${d.days.includes(w)?'on':''}" data-act="wday" data-v="${w}">${WD[w]}</button>`).join('')}</div></section>
+ <section class="section"><h2 style="margin-bottom:8px">Интервалы</h2><div class="chips">${SLOTS.map(s=>`<button class="chip ${d.slots.includes(s)?'on':''}" data-act="slot" data-v="${s}">${s}</button>`).join('')}</div></section>
+ <section class="section"><div class="section-head"><h2>Ближайшие 2 недели</h2></div><div class="days">${days.map(x=>{const k=iso(x),cl=d.closed.find(c=>c.date===k),on=d.days.includes(x.getDay());return `<button class="day ${cl?'closed':on?'on':''}" data-act="${on||cl?'toggle-date':''}" data-v="${k}" ${on||cl?'':'disabled'} title="${cl?'Закрыто: '+esc(cl.reason):''}">${WD[x.getDay()]}<b>${x.getDate()}</b></button>`;}).join('')}</div>
+ <p class="tiny muted" style="margin-top:8px">Нажмите на день доставки, чтобы закрыть его («в субботу не везу»). Покупатели не смогут выбрать закрытую дату.</p>
+ ${d.closed.length?d.closed.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(c=>`<div class="line"><span class="grow"><b>${human(c.date)}</b><span>${esc(c.reason)}</span></span><button class="link" data-act="toggle-date" data-v="${c.date}">Открыть</button></div>`).join(''):''}</section>
+ <section class="section"><div class="section-head"><h2>Районы Петербурга</h2><span class="tiny muted">${d.districts.length} из ${DISTRICTS.length}</span></div>${DISTRICTS.map(r=>`<label class="district"><input type="checkbox" data-act="district" value="${r}" ${d.districts.includes(r)?'checked':''}>${r}</label>`).join('')}</section>
+ ${!deliveryReady(f)?`<div class="notice warn">${ic('warning')}<div>Выберите хотя бы один день и один район, иначе покупатели не смогут заказать.</div></div>`:`<div class="notice ok">${ic('check')}<div>Возите ${d.days.map(w=>WD[w]).join(', ')} в ${d.districts.length} ${d.districts.length===1?'район':d.districts.length<5?'района':'районов'}. Сохраняется сразу.</div></div>`}</div>`;}
+
+/* ===== Money and stats ===== */
+let MTAB='stats';
+function monthKey(s){return s.slice(0,7);}
+function renderMoney(){const f=farm(),os=allOrders(f);const tabs=`<div class="seg"><button class="${MTAB==='stats'?'on':''}" data-act="mtab" data-v="stats">Статистика</button><button class="${MTAB==='pay'?'on':''}" data-act="mtab" data-v="pay">Выплаты</button><button class="${MTAB==='reviews'?'on':''}" data-act="mtab" data-v="reviews">Отзывы</button></div>`;
+ return `${head('Итоги','Цифры по доставленным заказам')}<div class="pad">${tabs}${MTAB==='stats'?stats(f,os):MTAB==='pay'?payouts(f,os):reviews(f)}</div>`;}
+function stats(f,os){const done=os.filter(o=>o.status==='done');const t=today();
+ const inRange=(o,a,b)=>{const d=new Date(o.deliveryDate+'T12:00:00');return d>addDays(t,-a)&&d<=addDays(t,-b);};
+ const w=done.filter(o=>inRange(o,7,0)),wPrev=done.filter(o=>inRange(o,14,7)),m=done.filter(o=>inRange(o,30,0));
+ const sum=a=>a.reduce((s,o)=>s+farmerPart(o.total),0);
+ const diff=(a,b)=>b?Math.round((a-b)/b*100):0;
+ // repeat share: orders (30 days) from buyers who had an earlier order
+ const sorted=done.slice().sort((a,b)=>a.deliveryDate.localeCompare(b.deliveryDate));const seen=new Set();let rep=0,cnt=0;const from=iso(addDays(t,-30));
+ sorted.forEach(o=>{const isRep=seen.has(o.buyerId);if(o.deliveryDate>from){cnt++;if(isRep)rep++;}seen.add(o.buyerId);});
+ const top={};m.forEach(o=>o.items.filter(i=>!i.removed).forEach(i=>{top[i.name]=(top[i.name]||0)+farmerPart(i.price*i.qty);}));const topL=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);const topMax=topL[0]?.[1]||1;
+ const weeks=Array.from({length:8},(_,i)=>{const a=(8-i)*7,b=(7-i)*7;return {label:addDays(t,-b).getDate()+'.'+pad2(addDays(t,-b).getMonth()+1),v:sum(done.filter(o=>inRange(o,a,b)))};});const wMax=Math.max(...weeks.map(x=>x.v),1);
+ const cancelled=os.filter(o=>o.status==='cancelled'&&inRange(o,30,0)).length;
+ const rating=f.reviews.length?(f.reviews.reduce((s,r)=>s+r.stars,0)/f.reviews.length):0;
+ return `<div class="kpis"><div class="kpi"><span>Выручка за 7 дней</span><b>${money(sum(w))}</b><i>${diff(sum(w),sum(wPrev))>=0?'+':''}${diff(sum(w),sum(wPrev))}% к прошлой неделе</i></div><div class="kpi"><span>Выручка за 30 дней</span><b>${money(sum(m))}</b><i>ваша часть, без 20%</i></div>
+ <div class="kpi"><span>Заказов за 30 дней</span><b>${m.length}</b><i>средний ${money(m.length?sum(m)/m.length:0)}${cancelled?` · отказов ${cancelled}`:''}</i></div><div class="kpi"><span>Повторные заказы</span><b>${cnt?Math.round(rep/cnt*100):0}%</b><i>${rep} из ${cnt} за 30 дней</i></div>
+ <div class="kpi"><span>Рейтинг</span><b>${rating?rating.toFixed(1).replace('.',','):'—'} <span class="stars" style="font-size:14px">★</span></b><i>${f.reviews.length} отзывов</i></div><div class="kpi"><span>Товаров в продаже</span><b>${activeProducts(f).length}</b><i>из ${f.products.length}</i></div></div>
+ <section class="section"><h2>Выручка по неделям</h2><div class="bars" role="img" aria-label="Выручка по неделям">${weeks.map(x=>`<div title="${money(x.v)}"><i style="height:${Math.round(x.v/wMax*88)}%"></i><span>${x.label}</span></div>`).join('')}</div></section>
+ <section class="section"><h2 style="margin-bottom:8px">Топ товаров за 30 дней</h2>${topL.length?topL.map(([n,v])=>`<div style="margin-bottom:9px"><div class="sum" style="padding:0 0 3px"><span>${esc(n)}</span><b>${money(v)}</b></div><div style="height:7px;background:var(--fill);border-radius:4px"><div style="height:100%;width:${Math.round(v/topMax*100)}%;background:var(--gold);border-radius:4px"></div></div></div>`).join(''):'<p class="small muted">Пока нет доставленных заказов.</p>'}</section>`;}
+function monthActs(os){const by={};os.filter(o=>o.status==='done').forEach(o=>{const k=monthKey(o.deliveryDate);(by[k]=by[k]||[]).push(o);});return Object.entries(by).sort((a,b)=>b[0].localeCompare(a[0]));}
+function payouts(f,os){const cur=monthKey(iso(today()));const acts=monthActs(os);const curOrders=(acts.find(a=>a[0]===cur)||[0,[]])[1];
+ const tot=a=>a.reduce((s,o)=>s+o.total,0);const nm=new Date(today().getFullYear(),today().getMonth()+1,10);
+ return `<div class="card" style="background:var(--green-pale);border-color:transparent"><span class="small">Накоплено за ${MONTHS[today().getMonth()]}</span><h1 style="margin:4px 0">${money(farmerPart(tot(curOrders)))}</h1><p class="small">${curOrders.length} доставленных заказов. Выплата до ${nm.getDate()} ${MONTHS_G[nm.getMonth()]} по акту.</p></div>
+ <div class="notice">${ic('info')}<div>Как считаем: покупатель платит Грабельке, мы оставляем себе 20% сверх вашей цены, а вашу часть переводим раз в месяц по акту. Отменённые заказы в акт не входят.</div></div>
+ <h2 style="margin:16px 0 8px">Акты</h2>${acts.map(([k,a])=>{const [y,mo]=k.split('-').map(Number);const paid=k<cur;return `<a class="card order" href="#/act/${k}"><div class="order-top"><strong>${MONTHS[mo-1][0].toUpperCase()+MONTHS[mo-1].slice(1)} ${y}</strong><span class="badge ${paid?'b-done':'b-new'}">${paid?'Выплачено':'Месяц идёт'}</span></div><p>${a.length} заказов · продано на ${money(tot(a))} · к выплате <b>${money(farmerPart(tot(a)))}</b></p></a>`;}).join('')||'<p class="small muted">Актов пока нет.</p>'}`;}
+function renderAct(k){const f=farm(),acts=monthActs(allOrders(f));const a=(acts.find(x=>x[0]===k)||[0,null])[1];if(!a)return notFound();
+ const [y,mo]=k.split('-').map(Number);const last=new Date(y,mo,0);const tot=a.reduce((s,o)=>s+o.total,0),part=farmerPart(tot);
+ return `${head('Акт за '+MONTHS[mo-1]+' '+y,'Учебный образец','money')}<div class="pad"><div class="act"><h2>Акт № ${String(mo).padStart(2,'0')}-${f.id.toUpperCase()}</h2><p style="text-align:center" class="small">об оказании услуг агрегатора за период 01.${pad2(mo)}.${y}–${last.getDate()}.${pad2(mo)}.${y}</p>
+ <p class="small" style="margin-top:10px">Исполнитель: сервис «Грабелька» (учебный проект).<br>Продавец: ${esc(f.name)}, ${esc(f.person)}.</p>
+ <table><thead><tr><th>Дата</th><th>Заказ</th><th class="r">Оплачено покупателем</th><th class="r">Продавцу</th></tr></thead><tbody>${a.sort((x,z)=>x.deliveryDate.localeCompare(z.deliveryDate)).map(o=>`<tr><td>${o.deliveryDate.slice(8)}.${pad2(mo)}</td><td>${esc(o.num)}</td><td class="r">${money(o.total)}</td><td class="r">${money(farmerPart(o.total))}</td></tr>`).join('')}</tbody>
+ <tfoot><tr><th colspan="2">Итого, ${a.length} заказов</th><th class="r">${money(tot)}</th><th class="r">${money(part)}</th></tr></tfoot></table>
+ <p class="small">Вознаграждение агрегатора (20% к цене продавца): <b>${money(tot-part)}</b>.<br>К перечислению продавцу: <b>${money(part)}</b>.</p><p class="small" style="margin-top:14px">Стороны претензий не имеют.</p></div>
+ <button class="btn block ghost no-print" style="margin-top:12px" onclick="print()">${ic('document')}Распечатать или сохранить PDF</button></div>`;}
+function reviews(f){return f.reviews.length?f.reviews.map(r=>`<div class="card"><div class="order-top"><strong>${esc(r.who)}</strong><span class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span></div><p class="small" style="margin-top:6px">${esc(r.text)}</p><p class="tiny muted" style="margin-top:4px">${human(r.date)}</p></div>`).join(''):`<div class="empty">${ic('star')}<p>Отзывов пока нет. Покупатель оставляет отзыв после доставки.</p></div>`;}
+
+/* ===== Farm profile, documents, Telegram ===== */
+function renderFarm(){const f=farm();
+ return `${head('Ферма',verified(f)?'Проверена командой Грабельки':'Ждёт проверки документов')}<div class="pad">
+ <form id="f-farm"><div class="field"><span>Фото хозяйства <i>*</i></span><label class="photo-drop">${f.photo?`<img src="${esc(f.photo)}" alt="">`:`<span class="ph">${ic('camera')}</span>`}<span class="small"><b>Загрузить фото</b><br><span class="muted">Покупатели хотят видеть, откуда еда</span></span><input type="file" accept="image/*" id="farm-photo" hidden></label></div>
+ <label class="field"><span>Название</span><input name="name" maxlength="60" value="${esc(f.name)}" required></label>
+ <label class="field"><span>Где хозяйство</span><input name="place" maxlength="80" value="${esc(f.place)}"></label>
+ <label class="field"><span>История фермы <i>*</i></span><textarea name="story" maxlength="600" placeholder="С какого года, сколько животных, как кормите, кто работает">${esc(f.story)}</textarea><span class="hint">Минимум 30 символов. Это то, чего нет у Доброеда: покупатель знает своего фермера.</span></label>
+ <button class="btn block ghost">Сохранить профиль</button></form>
+ <section class="section" id="docs"><div class="section-head"><h2>Документы</h2>${verified(f)?`<span class="badge b-done">${ic('shield')}Проверен</span>`:''}</div>
+ ${DOCS.map(d=>{const st=f.docs[d.id]||{state:'none'};const lab={none:['Не загружен',''],review:['На проверке','b-new'],ok:['Принят','b-done'],fix:['Нужно исправить','b-cancelled']}[st.state];return `<div class="card"><div class="order-top"><strong>${d.name}${d.required?'':' <span class="tiny muted">(по желанию)</span>'}</strong><span class="badge ${lab[1]}">${lab[0]}</span></div><p class="small muted" style="margin-top:4px">${d.hint}${st.file?` · ${esc(st.file)}`:''}</p>${st.state==='fix'?`<p class="small" style="color:var(--warn);margin-top:4px">${esc(st.note||'')}</p>`:''}
+ <div class="row" style="margin-top:8px">${st.state!=='ok'?`<label class="btn ghost sm">${ic('plus')}${st.state==='none'?'Загрузить':'Заменить'}<input type="file" data-doc="${d.id}" accept="image/*,.pdf" hidden></label>`:''}${st.state==='review'?`<button class="btn sm" data-act="doc-ok" data-v="${d.id}">Принять (за команду)</button><button class="btn danger sm" data-act="doc-fix" data-v="${d.id}">Вернуть</button>`:''}</div></div>`;}).join('')}
+ <p class="tiny muted">Кнопки «за команду» есть только в учебной версии, чтобы пройти весь путь самой.</p></section>
+ <section class="section"><h2 style="margin-bottom:8px">Telegram</h2>${f.telegram.connected?`<div class="notice ok">${ic('send')}<div>Бот присылает новые заказы в ${esc(f.telegram.user)}. Принять или отказаться можно прямо в чате.</div></div><button class="link" data-act="tg-off">Отключить</button>`:`<p class="small muted" style="margin-bottom:8px">Новые заказы приходят в Telegram с кнопками «Принять» и «Отказаться». Так вы ответите покупателю быстрее, даже с поля.</p><button class="btn block" data-act="tg-on">${ic('send')}Подключить бота</button>`}</section>
+ <section class="section"><a class="btn ghost block" href="index.html">${ic('basket')}Посмотреть сайт глазами покупателя</a><button class="btn danger block" style="margin-top:8px" data-act="logout">Выйти</button><button class="link" style="margin-top:14px" data-act="reset">${ic('refresh')}Сбросить демонстрацию</button></section></div>`;}
+
+function notFound(){return `${head('Не найдено','','home')}<div class="empty">${ic('leaf')}<p>Такой страницы нет.</p><a class="btn" href="#/home">В кабинет</a></div>`;}
+
+/* ===== Router ===== */
+const NAV=[['home','home','Главная'],['orders','list','Заказы'],['products','package','Витрина'],['delivery','truck','Доставка'],['money','chart','Итоги']];
+function render(){const r=route(),f=farm();const app=$('#app');
+ if(!f&&r.name==='join'&&!render.joined){render.joined=true;L.mode='join';}
+ if(f&&r.name==='join'){go('home');return;}
+ if(!f){app.innerHTML=renderLogin();$('#nav').hidden=true;$('#shell').classList.add('nonav');return;}
+ $('#nav').hidden=false;$('#shell').classList.remove('nonav');
+ const map={home:renderHome,orders:renderOrders,order:renderOrder,products:()=>{PTAB='products';return renderProducts();},'product-new':()=>renderProductForm(''),product:renderProductForm,sets:renderSets,set:renderSetForm,delivery:renderDelivery,money:renderMoney,act:renderAct,farm:renderFarm,docs:()=>renderFarm()};
+ app.innerHTML=(map[r.name]||notFound)(r.id);
+ if(r.name==='docs')setTimeout(()=>$('#docs')?.scrollIntoView(),0);
+ const sect={order:'orders','product-new':'products',product:'products',sets:'products',set:'products',act:'money'}[r.name]||r.name;
+ const nNew=allOrders(f).filter(o=>o.status==='new').length;
+ $('#nav').innerHTML=NAV.map(([k,i,t])=>`<a href="#/${k}" class="${sect===k?'on':''}" ${sect===k?'aria-current="page"':''}>${ic(i)}${t}${k==='orders'&&nNew?`<span class="cnt">${nNew}</span>`:''}</a>`).join('');
+}
+let lastRoute='';window.addEventListener('hashchange',()=>{const r=route();if(!(r.name==='set'))SETDRAFT=r.name==='set'?SETDRAFT:null;render();if(location.hash!==lastRoute)window.scrollTo(0,0);lastRoute=location.hash;});
+
+/* ===== Events ===== */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.tagName==='INPUT'||b.tagName==='SELECT')return;const a=b.dataset.act,f=farm();
+ const o=b.dataset.id?findOrder(b.dataset.id):null;
+ switch(a){
+ case 'close-sheet':closeSheet();break;
+ case 'lmode':L.mode=b.dataset.v;L.step='phone';render();break;
+ case 'lback':L.step='phone';render();break;
+ case 'launch':S.launched=b.dataset.v==='1';save();render();break;
+ case 'accept':if(!o)break;setStatus(o,'accepted');toast('Заказ принят. Покупатель получил SMS');render();break;
+ case 'decline':if(!o)break;sheet('Отказаться от заказа '+o.num,`<p class="small" style="margin-bottom:10px">Покупателю предложим ближайшую дату у другой фермы. Отказы снижают ваш рейтинг, поэтому лучше предложить замену товара.</p>${['Нет части товаров','Не успеваю в эту дату','Не вожу по этому адресу','Другое'].map(r=>`<button class="card" style="width:100%;text-align:left" data-act="decline-why" data-id="${esc(o.id)}" data-v="${r}">${r}</button>`).join('')}`);break;
+ case 'decline-why':if(!o)break;setStatus(o,'cancelled',{declineReason:b.dataset.v});closeSheet();toast('Заказ отменён');render();break;
+ case 'status':if(!o)break;setStatus(o,b.dataset.v);toast('Статус: '+STATUS[b.dataset.v]);if(b.dataset.v==='done'){o.items.filter(i=>!i.removed).forEach(i=>{const p=f.products.find(x=>x.id===i.pid);if(p)p.stock=Math.max(0,p.stock-i.qty);});save();}render();break;
+ case 'no-stock':if(o)noStock(o,Number(b.dataset.k));break;
+ case 'pick-rep':{if(!o)break;const p=f.products.find(x=>x.id===b.dataset.p),it=o.items[Number(b.dataset.k)];it.replace={pid:p.id,name:p.name,unit:p.unit,price:sitePrice(p.price),qty:it.qty};const prev=o.status;setStatus(o,'replace',{prevStatus:prev==='replace'?o.prevStatus:prev});closeSheet();toast('Покупателю отправлено SMS с заменой');render();break;}
+ case 'drop-item':{if(!o)break;o.items[Number(b.dataset.k)].removed=true;recalc(o);setStatus(o,o.status,{items:o.items});closeSheet();toast('Позиция убрана, сумма пересчитана');render();break;}
+ case 'rep-yes':case 'rep-no':{if(!o)break;o.items.forEach(i=>{if(!i.replace)return;if(a==='rep-yes'){Object.assign(i,{pid:i.replace.pid,name:i.replace.name,unit:i.replace.unit,price:i.replace.price,replaced:true});}else i.removed=true;delete i.replace;});recalc(o);setStatus(o,o.prevStatus||'accepted',{items:o.items});toast(a==='rep-yes'?'Покупатель согласился на замену':'Позиция убрана, сумма пересчитана');render();break;}
+ case 'ofilter':OF=b.dataset.v;render();break;
+ case 'stock':{const p=f.products.find(x=>x.id===b.dataset.p);p.stock=Math.max(0,p.stock+Number(b.dataset.v));save();render();break;}
+ case 'del-product':if(confirm('Удалить товар?')){f.products=f.products.filter(p=>p.id!==b.dataset.p);save();go('products');toast('Товар удалён');}break;
+ case 'set-size':SETDRAFT.size=Number(b.dataset.v);render();break;
+ case 'set-save':{const s={id:SETDRAFT.key.startsWith('new-')?'s'+Date.now().toString(36):SETDRAFT.key,tpl:SETDRAFT.tpl,size:SETDRAFT.size,picks:SETDRAFT.picks.slice(),state:'review'};f.sets=f.sets.filter(x=>x.id!==s.id).concat(s);SETDRAFT=null;save();go('sets');toast('Набор отправлен на проверку');break;}
+ case 'set-del':f.sets=f.sets.filter(x=>x.id!==SETDRAFT.key);SETDRAFT=null;save();go('sets');break;
+ case 'set-approve':{const s=f.sets.find(x=>x.id===b.dataset.id);s.state='live';save();render();toast('Набор в продаже');break;}
+ case 'wday':{const w=Number(b.dataset.v),d=f.delivery.days;f.delivery.days=d.includes(w)?d.filter(x=>x!==w):d.concat(w);save();render();break;}
+ case 'slot':{const s=b.dataset.v,d=f.delivery.slots;if(d.includes(s)&&d.length===1){toast('Нужен хотя бы один интервал');break;}f.delivery.slots=d.includes(s)?d.filter(x=>x!==s):SLOTS.filter(x=>d.includes(x)||x===s);save();render();break;}
+ case 'toggle-date':{const k=b.dataset.v,c=f.delivery.closed;if(c.some(x=>x.date===k)){f.delivery.closed=c.filter(x=>x.date!==k);save();render();toast('День снова открыт');}else sheet('Закрыть '+human(k),`<p class="small" style="margin-bottom:10px">Покупатели не смогут выбрать эту дату. Уже принятые заказы на неё останутся, их нужно перенести вручную.</p>${['Не везу в этот день','Машина в ремонте','Праздник, отдыхаем','Мало товара'].map(r=>`<button class="card" style="width:100%;text-align:left" data-act="close-date" data-v="${k}" data-r="${r}">${r}</button>`).join('')}`);break;}
+ case 'close-date':f.delivery.closed.push({date:b.dataset.v,reason:b.dataset.r});save();closeSheet();render();toast('День закрыт');break;
+ case 'mtab':MTAB=b.dataset.v;render();break;
+ case 'doc-ok':f.docs[b.dataset.v].state='ok';save();render();toast(verified(f)?'Все документы приняты. Ферма проверена!':'Документ принят');break;
+ case 'doc-fix':Object.assign(f.docs[b.dataset.v],{state:'fix',note:'Плохо читается дата на справке. Загрузите фото получше.'});save();render();break;
+ case 'tg-on':f.telegram={connected:true,user:'@'+(normPhone(f.phone).slice(-4)||'ferma')+'_demo'};save();render();toast('Бот подключён (имитация)');break;
+ case 'tg-off':f.telegram={connected:false};save();render();break;
+ case 'logout':S.session=null;L={step:'phone',phone:'',mode:'login'};sheetOrders=[];save();go('home');render();break;
+ case 'reset':if(confirm('Сбросить все изменения кабинета в этом браузере?')){S={v:1,session:null,launched:false,farms:{},leads:[]};save();sheetOrders=[];go('home');render();}break;
+ }
+});
+document.addEventListener('change',async e=>{const el=e.target,f=farm();
+ if(el.id==='ph-input'&&el.files[0]){try{draftPhoto=await readPhoto(el.files[0]);const ph=$('#ph-img');const img=document.createElement('img');img.id='ph-img';img.src=draftPhoto;img.alt='';ph.replaceWith(img);el.closest('[data-f]').classList.remove('bad');}catch{toast('Не удалось прочитать фото');}}
+ if(el.id==='farm-photo'&&el.files[0]){try{f.photo=await readPhoto(el.files[0]);save();render();}catch{toast('Не удалось прочитать фото');}}
+ if(el.dataset.doc&&el.files[0]){f.docs[el.dataset.doc]={state:'review',file:el.files[0].name};save();render();toast('Документ отправлен на проверку');}
+ if(el.dataset.act==='district'){const v=el.value,d=f.delivery.districts;f.delivery.districts=el.checked?DISTRICTS.filter(x=>d.includes(x)||x===v):d.filter(x=>x!==v);save();render();}
+ if(el.dataset.act==='set-pick'){SETDRAFT.picks[Number(el.dataset.i)]=el.value;render();}
+});
+document.addEventListener('input',e=>{if(e.target.name==='price'&&$('#site-price')){const v=Number(e.target.value);$('#site-price').textContent=v>0?'На сайте: '+money(sitePrice(v)):'На сайте +20%';}});
+document.addEventListener('submit',e=>{e.preventDefault();const fm=e.target,v=Object.fromEntries(new FormData(fm).entries()),f=farm();
+ if(fm.id==='f-phone'){const n=normPhone(v.phone);if(n.length!==11){toast('Введите номер полностью');return;}L.phone=v.phone;L.step='code';render();return;}
+ if(fm.id==='f-code'){if(!/^\d{4}$/.test(v.code)){toast('Код из 4 цифр');return;}const n=normPhone(L.phone);
+  const demo={'79000000001':'demo-a','79000000002':'demo-b'}[n];const own=Object.values(S.farms).find(x=>normPhone(x.phone)===n);
+  if(demo)ensureDemo(demo);const id=demo||own?.id;
+  if(!id){sheet('Номер не найден',`<p class="small">Этот телефон ещё не подключён. ${S.launched?'Зарегистрируйтесь на вкладке «Хочу продавать».':'Оставьте заявку на вкладке «Хочу продавать», менеджер позвонит и заведёт ферму.'}</p>`);return;}
+  S.session=id;save();sheetState=SHEET?'loading':'off';loadSheet();go('home');render();toast('Вы вошли');return;}
+ if(fm.id==='f-lead'){S.leads.push({...v,at:Date.now()});save();sendLead(v);fm.reset();sheet('Заявка принята',`<p class="small">Спасибо! Менеджер Грабельки позвонит в течение рабочего дня, поможет заполнить профиль и первые товары, а потом пришлёт вход по телефону.</p><p class="small muted" style="margin-top:8px">${SHEET?'Заявка записана на лист «Заявки» Google Таблицы.':'В учебной версии заявка сохранена в браузере.'}</p>`);return;}
+ if(fm.id==='f-signup'){const n=normPhone(v.phone);if(n.length!==11){toast('Введите номер полностью');return;}if(Object.values(S.farms).some(x=>normPhone(x.phone)===n)||['79000000001','79000000002'].includes(n)){toast('Этот номер уже зарегистрирован, войдите');return;}
+  const id='farm-'+Date.now().toString(36);S.farms[id]=blankFarm(id,v);S.session=id;save();go('home');render();toast('Кабинет создан. Пройдите шаги подключения');return;}
+ if(fm.id==='f-product'){const r=route();const val=checkProduct(fm);if(!val){fm.querySelector('.bad')?.scrollIntoView({block:'center',behavior:'smooth'});toast('Проверьте выделенные поля');return;}
+  if(r.id){Object.assign(f.products.find(p=>p.id===r.id),val);}else f.products.unshift({id:'p'+Date.now().toString(36),...val});
+  save();go('products');toast(verified(f)?'Товар в витрине':'Товар сохранён. Покажем после проверки документов');return;}
+ if(fm.id==='f-farm'){f.name=v.name.trim()||f.name;f.place=v.place.trim();f.story=v.story.trim();save();render();toast('Профиль сохранён');return;}
+});
+render();if(farm())loadSheet();
+setInterval(()=>{if(farm()&&SHEET&&!document.hidden)loadSheet();},30000);
+})();
+</script>
+</body>
+</html>
