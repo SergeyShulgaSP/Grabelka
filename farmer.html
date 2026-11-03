@@ -81,6 +81,8 @@ const $=s=>document.querySelector(s);
 const MARKUP=0.25; // Грабелька: цена на сайте = цена фермера + 25%, это ровно 20% от цены на сайте
 const sitePrice=p=>Math.round(p*(1+MARKUP));
 const farmerPart=t=>Math.round(t/(1+MARKUP));
+// farmer always gets his own price for every item; set discounts are paid by Grabelka
+const part=o=>o.items.filter(i=>!i.removed).reduce((s,i)=>s+Math.round(i.price/(1+MARKUP))*i.qty,0);
 const DAY=864e5;
 const pad2=n=>String(n).padStart(2,'0');
 const iso=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
@@ -104,6 +106,7 @@ const TEMPLATES=[
  {id:'family',name:'Семейный',sub:'Базовые продукты на неделю',slots:[{label:'Молоко',cat:'milk',q:{3:3,4:4,5:6}},{label:'Творог',cat:'milk',q:{3:2,4:3,5:4}},{label:'Яйца',cat:'eggs',q:{3:3,4:4,5:5}},{label:'Овощи 1',cat:'vegetables',q:{3:3,4:3,5:3}},{label:'Овощи 2',cat:'vegetables',q:{3:2,4:3,5:2}}]},
  {id:'meat',name:'Мясной',sub:'Для обедов и ужинов',slots:[{label:'Мясо 1',cat:'meat',q:{3:1,4:1,5:2}},{label:'Мясо 2',cat:'meat',q:{3:1,4:2,5:1}},{label:'Овощи 1',cat:'vegetables',q:{3:1,4:1,5:1}},{label:'Овощи 2',cat:'vegetables',q:{3:1,4:1,5:1}}]}];
 const SET_DISCOUNT=0.05, MIN_ORDER=2000;
+const roundSet=x=>Math.round(x*(1-SET_DISCOUNT)/10)*10;
 
 /* ===== Demo data (fictional farms and buyers, no real personal data) ===== */
 function seedProducts(fid){
@@ -125,7 +128,7 @@ const BUYERS=['Анна','Мария К.','Ольга','Дмитрий','Ека�
 function seedOrders(fid,products){
  const t=today(),byId=Object.fromEntries(products.map(p=>[p.id,p]));
  const mk=(num,status,dayShift,buyer,lines,slot,extra={})=>{const items=lines.filter(([id])=>byId[id]).map(([id,q])=>({pid:id,name:byId[id].name,unit:byId[id].unit,price:sitePrice(byId[id].price),qty:q}));
-  return {id:num,num,status,deliveryDate:iso(addDays(t,dayShift)),slot,buyerName:buyer,buyerId:buyer,address:'ул. Примерная, д. '+(3+num.length%9)+' (пример)',phone:'+7 900 000-00-00',items,total:items.reduce((s,i)=>s+i.price*i.qty,0),demo:true,createdAt:addDays(t,Math.min(dayShift,0)-1).getTime(),...extra};};
+  return {id:num,num,status,deliveryDate:iso(addDays(t,dayShift)),slot,buyerName:buyer,buyerId:buyer,address:'ул. Примерная, д. '+(3+num.length%9)+' (пример)',phone:'+7 900 000-00-00',items,total:extra.set?roundSet(items.reduce((s,i)=>s+i.price*i.qty,0)):items.reduce((s,i)=>s+i.price*i.qty,0),demo:true,createdAt:addDays(t,Math.min(dayShift,0)-1).getTime(),...extra};};
  const L=fid==='demo-b'?[['milk-b',3],['eggs-b',2]]:null;
  const live=fid==='demo-b'?[mk('ГБ-2041','new',1,'Анна',L,'12:00–15:00')]:[
   mk('ГБ-1052','new',1,'Мария К.',[['milk',3],['curd',2],['eggs',3],['carrot',3],['onion',2]],'18:00–21:00',{set:'Семейный на 3 человека'}),
@@ -237,7 +240,7 @@ function renderHome(){
  ${onboarding}
  ${tg?`<section class="section"><div class="section-head"><h2>Новый заказ</h2><span class="tiny muted">так он придёт в Telegram</span></div>${tg}</section>`:''}
  <section class="section"><div class="section-head"><h2>Сегодня и завтра</h2><a class="link" href="#/orders">Все заказы ${ic('chevron')}</a></div>${todayList.length?todayList.map(orderCard).join(''):`<div class="card flat small muted">Нет принятых заказов на сегодня и завтра.</div>`}</section>
- <section class="section"><div class="kpis"><a class="kpi" href="#/orders"><span>Новых заказов</span><b>${fresh.length}</b><i>ждут ответа</i></a><a class="kpi" href="#/money"><span>Ваша часть за ${MONTHS[today().getMonth()]}</span><b>${money(monthDone.reduce((s,o)=>s+farmerPart(o.total),0))}</b><i>выплата по акту</i></a></div></section>
+ <section class="section"><div class="kpis"><a class="kpi" href="#/orders"><span>Новых заказов</span><b>${fresh.length}</b><i>ждут ответа</i></a><a class="kpi" href="#/money"><span>Ваша часть за ${MONTHS[today().getMonth()]}</span><b>${money(monthDone.reduce((s,o)=>s+part(o),0))}</b><i>выплата по акту</i></a></div></section>
  ${sheetNote()}</div>${demoBar()}`;
 }
 function sheetNote(){if(sheetState==='off')return '';if(sheetState==='loading')return `<p class="tiny muted">Загружаем заказы с сайта из Google Таблицы…</p>`;if(sheetState==='error')return `<div class="notice warn">${ic('warning')}<div>Google Таблица не ответила. Показываем примеры заказов.</div></div>`;
@@ -245,9 +248,9 @@ function sheetNote(){if(sheetState==='off')return '';if(sheetState==='loading')r
 function tgCard(o){const n=o.items.reduce((s,i)=>s+i.qty,0);return `<div class="tg"><div class="tg-head"><span class="tg-ava">Г</span>Грабелька · бот для фермеров</div><div class="tg-msg"><b>Новый заказ ${esc(o.num)}</b>${o.set?`\nНабор: ${esc(o.set)}`:''}
 ${human(o.deliveryDate)}, ${esc(o.slot)}
 ${o.items.map(i=>`· ${esc(i.name)} × ${i.qty}`).join('\n')}
-Позиций: ${n}. Ваша часть: <b>${money(farmerPart(o.total))}</b>
+Позиций: ${n}. Ваша часть: <b>${money(part(o))}</b>
 Ответьте, пожалуйста, до 20:00</div><div class="tg-btns"><button data-act="accept" data-id="${esc(o.id)}">✅ Принять</button><button data-act="decline" data-id="${esc(o.id)}">❌ Отказаться</button></div></div>`;}
-function orderCard(o){return `<a class="card order" href="#/order/${encodeURIComponent(o.id)}"><div class="order-top"><strong>${esc(o.num)} · ${esc(o.buyerName||'Покупатель')}</strong>${badge(o.status)}</div><p>${human(o.deliveryDate)}, ${esc(o.slot||'')} · ${o.items.length} поз. · ваша часть ${money(farmerPart(o.total))}${o.fromSheet?' · с сайта':o.demo?' · пример':''}</p></a>`;}
+function orderCard(o){return `<a class="card order" href="#/order/${encodeURIComponent(o.id)}"><div class="order-top"><strong>${esc(o.num)} · ${esc(o.buyerName||'Покупатель')}</strong>${badge(o.status)}</div><p>${human(o.deliveryDate)}, ${esc(o.slot||'')} · ${o.items.length} поз. · ваша часть ${money(part(o))}${o.fromSheet?' · с сайта':o.demo?' · пример':''}</p></a>`;}
 
 /* ===== Orders ===== */
 let OF='active';
@@ -258,13 +261,13 @@ function renderOrders(){const f=farm(),os=allOrders(f);
  ${list.length?list.slice(0,OF==='done'?40:99).map(orderCard).join(''):`<div class="empty">${ic('basket')}<p>Здесь пока пусто</p></div>`}${sheetNote()}</div>`;}
 function renderOrder(id){const f=farm(),o=findOrder(id);if(!o)return notFound();
  const byId=Object.fromEntries(f.products.map(p=>[p.id,p]));
- const items=o.items.map((i,k)=>{const p=byId[i.pid];const rep=i.replace;return `<div class="line"><img src="${esc(p?.photo||'img/products/milk.jpg')}" alt=""><div class="grow"><b>${esc(i.name)} × ${i.qty}</b><span>${esc(i.unit||'')} · ${money(farmerPart(i.price*i.qty))} ваша часть</span>${rep?`<span class="badge b-replace" style="margin-top:4px">Предложена замена: ${esc(rep.name)} × ${rep.qty}</span>`:''}${i.removed?`<span class="badge b-cancelled" style="margin-top:4px">Убрано: покупатель отказался от замены</span>`:''}</div>${['new','accepted'].includes(o.status)&&!rep&&!i.removed?`<button class="btn ghost sm" data-act="no-stock" data-id="${esc(o.id)}" data-k="${k}">Нет в наличии</button>`:''}</div>`;}).join('');
+ const items=o.items.map((i,k)=>{const p=byId[i.pid];const rep=i.replace;return `<div class="line"><img src="${esc(p?.photo||'img/products/milk.jpg')}" alt=""><div class="grow"><b>${esc(i.name)} × ${i.qty}</b><span>${esc(i.unit||'')} · ${money(Math.round(i.price/(1+MARKUP))*i.qty)} ваша часть</span>${rep?`<span class="badge b-replace" style="margin-top:4px">Предложена замена: ${esc(rep.name)} × ${rep.qty}</span>`:''}${i.removed?`<span class="badge b-cancelled" style="margin-top:4px">Убрано: покупатель отказался от замены</span>`:''}</div>${['new','accepted'].includes(o.status)&&!rep&&!i.removed?`<button class="btn ghost sm" data-act="no-stock" data-id="${esc(o.id)}" data-k="${k}">Нет в наличии</button>`:''}</div>`;}).join('');
  const rep=o.items.some(i=>i.replace);
  const next={accepted:['assembled','Заказ собран'],assembled:['delivering','Выехал к покупателю'],delivering:['done','Доставлен']}[o.status];
  return `${head('Заказ '+o.num,(o.fromSheet?'С сайта, из Google Таблицы':'Пример')+' · '+STATUS[o.status],'orders')}<div class="pad">
  <div class="card"><div class="order-top"><strong>${human(o.deliveryDate)}, ${esc(o.slot||'')}</strong>${badge(o.status)}</div><p class="small" style="margin-top:8px">${esc(o.buyerName||'')} · ${esc(o.phone||'')}<br>${esc(o.address||'')}</p>${o.set?`<p class="small muted" style="margin-top:6px">Набор: ${esc(o.set)}</p>`:''}${o.declineReason?`<p class="small" style="margin-top:6px;color:var(--warn)">Причина отказа: ${esc(o.declineReason)}</p>`:''}</div>
  <section class="section"><h2 style="margin-bottom:6px">Состав</h2><div class="card">${items}</div>
- <div class="card flat"><div class="sum"><span>Сумма для покупателя</span><span>${money(o.total)}</span></div><div class="sum"><span>Грабелька, 20% от цены на сайте</span><span>−${money(o.total-farmerPart(o.total))}</span></div><div class="sum total"><span>Ваша часть</span><span>${money(farmerPart(o.total))}</span></div></div></section>
+ <div class="card flat"><div class="sum"><span>Сумма для покупателя</span><span>${money(o.total)}</span></div><div class="sum"><span>Доля Грабельки</span><span>−${money(o.total-part(o))}</span></div><div class="sum total"><span>Ваша часть</span><span>${money(part(o))}</span></div></div></section>
  ${o.status==='new'?`<div class="row"><button class="btn danger" data-act="decline" data-id="${esc(o.id)}">Отказаться</button><button class="btn green" data-act="accept" data-id="${esc(o.id)}">Принять заказ</button></div>`:''}
  ${o.status==='replace'||rep?`<div class="notice">${ic('swap')}<div>Покупатель получил SMS с предложением замены. В учебной версии ответьте за него:</div></div><div class="row"><button class="btn ghost" data-act="rep-no" data-id="${esc(o.id)}">Покупатель отказался</button><button class="btn" data-act="rep-yes" data-id="${esc(o.id)}">Покупатель согласен</button></div>`:''}
  ${next&&!rep?`<button class="btn block green" data-act="status" data-id="${esc(o.id)}" data-v="${next[0]}">${ic('check')}${next[1]}</button><p class="tiny muted" style="margin-top:6px">Покупатель видит статус в профиле на сайте.</p>`:''}
@@ -318,19 +321,19 @@ function readPhoto(file){return new Promise((res,rej)=>{const r=new FileReader()
 
 /* ===== Sets by template ===== */
 let SETDRAFT=null;
-function setPrice(f,s){const t=TEMPLATES.find(x=>x.id===s.tpl);const by=Object.fromEntries(f.products.map(p=>[p.id,p]));let sum=0;t.slots.forEach((sl,i)=>{const p=by[s.picks[i]];if(p)sum+=sitePrice(p.price)*sl.q[s.size];});return {sum,price:Math.round(sum*(1-SET_DISCOUNT))};}
+function setPrice(f,s){const t=TEMPLATES.find(x=>x.id===s.tpl);const by=Object.fromEntries(f.products.map(p=>[p.id,p]));let sum=0,farmer=0;t.slots.forEach((sl,i)=>{const p=by[s.picks[i]];if(p){sum+=sitePrice(p.price)*sl.q[s.size];farmer+=p.price*sl.q[s.size];}});return {sum,farmer,price:roundSet(sum)};}
 function renderSets(){const f=farm();PTAB='sets';
  const tabs=`<div class="seg"><a href="#/products">Товары (${f.products.length})</a><a class="on" href="#/sets">Наборы (${f.sets.length})</a></div>`;
  return `${head('Витрина','Наборы на 3, 4 и 5 человек')}<div class="pad">${tabs}
- <p class="small muted" style="margin-bottom:12px">Шаблон набора задаёт Грабелька: что в нём лежит и сколько. Вы подставляете свои товары. Покупатель получает скидку ${SET_DISCOUNT*100}%, а вы - заказ от ${money(MIN_ORDER)}.</p>
- ${f.sets.map(s=>{const t=TEMPLATES.find(x=>x.id===s.tpl),pr=setPrice(f,s);return `<div class="card"><div class="order-top"><strong>${esc(t.name)} на ${s.size} ${s.size===5?'человек':'человека'}</strong><span class="badge ${s.state==='live'?'b-done':'b-new'}">${s.state==='live'?'В продаже':'На проверке'}</span></div><p class="small muted" style="margin-top:4px">${money(pr.price)} для покупателя · ваша часть ${money(farmerPart(pr.price))}</p><div class="row" style="margin-top:8px"><a class="btn ghost sm" href="#/set/${esc(s.id)}">Изменить</a>${s.state!=='live'?`<button class="btn sm" data-act="set-approve" data-id="${esc(s.id)}">Одобрить (за команду)</button>`:''}</div></div>`;}).join('')}
+ <p class="small muted" style="margin-bottom:12px">Шаблон набора задаёт Грабелька: что в нём лежит и сколько. Вы подставляете свои товары. Покупатель получает скидку ${SET_DISCOUNT*100}% за наш счёт: вам платим ваши цены полностью. Вы получаете заказ от ${money(MIN_ORDER)}.</p>
+ ${f.sets.map(s=>{const t=TEMPLATES.find(x=>x.id===s.tpl),pr=setPrice(f,s);return `<div class="card"><div class="order-top"><strong>${esc(t.name)} на ${s.size} ${s.size===5?'человек':'человека'}</strong><span class="badge ${s.state==='live'?'b-done':'b-new'}">${s.state==='live'?'В продаже':'На проверке'}</span></div><p class="small muted" style="margin-top:4px">${money(pr.price)} для покупателя · ваша часть ${money(pr.farmer)}</p><div class="row" style="margin-top:8px"><a class="btn ghost sm" href="#/set/${esc(s.id)}">Изменить</a>${s.state!=='live'?`<button class="btn sm" data-act="set-approve" data-id="${esc(s.id)}">Одобрить (за команду)</button>`:''}</div></div>`;}).join('')}
  <h2 style="margin:18px 0 10px">Шаблоны</h2>${TEMPLATES.map(t=>`<a class="card prod" href="#/set/new-${t.id}"><span class="grow"><b>${t.name}</b><span>${t.sub} · ${t.slots.map(s=>s.label).join(', ')}</span></span>${ic('plus')}</a>`).join('')}</div>`;}
 function renderSetForm(id){const f=farm();
  if(!SETDRAFT||SETDRAFT.key!==id){if(id.startsWith('new-')){const t=TEMPLATES.find(x=>'new-'+x.id===id);if(!t)return notFound();SETDRAFT={key:id,tpl:t.id,size:3,picks:[]};t.slots.forEach(sl=>{const used=SETDRAFT.picks;SETDRAFT.picks.push((f.products.find(p=>p.category===sl.cat&&p.active&&!used.includes(p.id))||f.products.find(p=>p.category===sl.cat&&p.active))?.id||'');});}else{const s=f.sets.find(x=>x.id===id);if(!s)return notFound();SETDRAFT={key:id,...JSON.parse(JSON.stringify(s))};}}
  const s=SETDRAFT,t=TEMPLATES.find(x=>x.id===s.tpl),pr=setPrice(f,s);const by=Object.fromEntries(f.products.map(p=>[p.id,p]));const missing=s.picks.some(p=>!by[p]);
  return `${head('Набор «'+t.name+'»',t.sub,'sets')}<div class="pad"><div class="seg">${[3,4,5].map(n=>`<button class="${s.size===n?'on':''}" data-act="set-size" data-v="${n}">на ${n} ${n===5?'человек':'человека'}</button>`).join('')}</div>
  ${t.slots.map((sl,i)=>{const opts=f.products.filter(p=>p.category===sl.cat);return `<label class="field"><span>${esc(sl.label)} × ${sl.q[s.size]}</span><select data-act="set-pick" data-i="${i}">${opts.length?'<option value="">Выберите товар</option>'+opts.map(p=>`<option value="${esc(p.id)}" ${s.picks[i]===p.id?'selected':''}>${esc(p.name)}, ${esc(p.unit)} - ${money(sitePrice(p.price))}</option>`).join(''):`<option value="">Нет товаров «${CATS[sl.cat]}». Добавьте их на вкладке «Товары»</option>`}</select></label>`;}).join('')}
- <div class="card flat"><div class="sum"><span>По отдельности</span><span>${money(pr.sum)}</span></div><div class="sum"><span>Скидка набора ${SET_DISCOUNT*100}%</span><span>−${money(pr.sum-pr.price)}</span></div><div class="sum total"><span>Цена набора</span><span>${money(pr.price)}</span></div><div class="sum"><span>Ваша часть</span><span>${money(farmerPart(pr.price))}</span></div></div>
+ <div class="card flat"><div class="sum"><span>По отдельности</span><span>${money(pr.sum)}</span></div><div class="sum"><span>Скидка набора ${SET_DISCOUNT*100}%</span><span>−${money(pr.sum-pr.price)}</span></div><div class="sum total"><span>Цена набора</span><span>${money(pr.price)}</span></div><div class="sum"><span>Ваша часть (ваши цены полностью)</span><span>${money(pr.farmer)}</span></div><div class="sum"><span>Доля Грабельки</span><span>${money(pr.price-pr.farmer)}</span></div></div>
  ${pr.price&&pr.price<MIN_ORDER?`<div class="notice warn">${ic('warning')}<div>Набор дешевле минимального заказа ${money(MIN_ORDER)}. Покупателю придётся докладывать товары. Выберите товары крупнее или размер побольше.</div></div>`:''}
  <button class="btn block green" data-act="set-save" ${missing?'disabled':''}>Отправить на проверку</button>${!s.key.startsWith('new-')?`<button class="btn danger block" style="margin-top:8px" data-act="set-del">Удалить набор</button>`:''}
  <p class="tiny muted" style="margin-top:8px">Команда проверит, что набор сытный и цена честная, и включит его на главной.</p></div>`;}
@@ -355,12 +358,12 @@ function renderMoney(){const f=farm(),os=allOrders(f);const tabs=`<div class="se
 function stats(f,os){const done=os.filter(o=>o.status==='done');const t=today();
  const inRange=(o,a,b)=>{const d=new Date(o.deliveryDate+'T12:00:00');return d>addDays(t,-a)&&d<=addDays(t,-b);};
  const w=done.filter(o=>inRange(o,7,0)),wPrev=done.filter(o=>inRange(o,14,7)),m=done.filter(o=>inRange(o,30,0));
- const sum=a=>a.reduce((s,o)=>s+farmerPart(o.total),0);
+ const sum=a=>a.reduce((s,o)=>s+part(o),0);
  const diff=(a,b)=>b?Math.round((a-b)/b*100):0;
  // repeat share: orders (30 days) from buyers who had an earlier order
  const sorted=done.slice().sort((a,b)=>a.deliveryDate.localeCompare(b.deliveryDate));const seen=new Set();let rep=0,cnt=0;const from=iso(addDays(t,-30));
  sorted.forEach(o=>{const isRep=seen.has(o.buyerId);if(o.deliveryDate>from){cnt++;if(isRep)rep++;}seen.add(o.buyerId);});
- const top={};m.forEach(o=>o.items.filter(i=>!i.removed).forEach(i=>{top[i.name]=(top[i.name]||0)+farmerPart(i.price*i.qty);}));const topL=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);const topMax=topL[0]?.[1]||1;
+ const top={};m.forEach(o=>o.items.filter(i=>!i.removed).forEach(i=>{top[i.name]=(top[i.name]||0)+Math.round(i.price/(1+MARKUP))*i.qty;}));const topL=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);const topMax=topL[0]?.[1]||1;
  const weeks=Array.from({length:8},(_,i)=>{const a=(8-i)*7,b=(7-i)*7;return {label:addDays(t,-b).getDate()+'.'+pad2(addDays(t,-b).getMonth()+1),v:sum(done.filter(o=>inRange(o,a,b)))};});const wMax=Math.max(...weeks.map(x=>x.v),1);
  const cancelled=os.filter(o=>o.status==='cancelled'&&inRange(o,30,0)).length;
  const rating=f.reviews.length?(f.reviews.reduce((s,r)=>s+r.stars,0)/f.reviews.length):0;
@@ -372,16 +375,16 @@ function stats(f,os){const done=os.filter(o=>o.status==='done');const t=today();
 function monthActs(os){const by={};os.filter(o=>o.status==='done').forEach(o=>{const k=monthKey(o.deliveryDate);(by[k]=by[k]||[]).push(o);});return Object.entries(by).sort((a,b)=>b[0].localeCompare(a[0]));}
 function payouts(f,os){const cur=monthKey(iso(today()));const acts=monthActs(os);const curOrders=(acts.find(a=>a[0]===cur)||[0,[]])[1];
  const tot=a=>a.reduce((s,o)=>s+o.total,0);const nm=new Date(today().getFullYear(),today().getMonth()+1,10);
- return `<div class="card" style="background:var(--green-pale);border-color:transparent"><span class="small">Накоплено за ${MONTHS[today().getMonth()]}</span><h1 style="margin:4px 0">${money(farmerPart(tot(curOrders)))}</h1><p class="small">${curOrders.length} доставленных заказов. Выплата до ${nm.getDate()} ${MONTHS_G[nm.getMonth()]} по акту.</p></div>
- <div class="notice">${ic('info')}<div>Как считаем: покупатель платит Грабельке, мы добавляем 25% к вашей цене (это 20% от цены на сайте) и оставляем их себе, а вашу цену полностью переводим раз в месяц по акту. Отменённые заказы в акт не входят.</div></div>
- <h2 style="margin:16px 0 8px">Акты</h2>${acts.map(([k,a])=>{const [y,mo]=k.split('-').map(Number);const paid=k<cur;return `<a class="card order" href="#/act/${k}"><div class="order-top"><strong>${MONTHS[mo-1][0].toUpperCase()+MONTHS[mo-1].slice(1)} ${y}</strong><span class="badge ${paid?'b-done':'b-new'}">${paid?'Выплачено':'Месяц идёт'}</span></div><p>${a.length} заказов · продано на ${money(tot(a))} · к выплате <b>${money(farmerPart(tot(a)))}</b></p></a>`;}).join('')||'<p class="small muted">Актов пока нет.</p>'}`;}
+ return `<div class="card" style="background:var(--green-pale);border-color:transparent"><span class="small">Накоплено за ${MONTHS[today().getMonth()]}</span><h1 style="margin:4px 0">${money(curOrders.reduce((s,o)=>s+part(o),0))}</h1><p class="small">${curOrders.length} доставленных заказов. Выплата до ${nm.getDate()} ${MONTHS_G[nm.getMonth()]} по акту.</p></div>
+ <div class="notice">${ic('info')}<div>Как считаем: покупатель платит Грабельке, мы добавляем 25% к вашей цене (это 20% от цены на сайте) и оставляем их себе, а вашу цену полностью, даже если товар продан в наборе со скидкой, переводим раз в месяц по акту. Отменённые заказы в акт не входят.</div></div>
+ <h2 style="margin:16px 0 8px">Акты</h2>${acts.map(([k,a])=>{const [y,mo]=k.split('-').map(Number);const paid=k<cur;return `<a class="card order" href="#/act/${k}"><div class="order-top"><strong>${MONTHS[mo-1][0].toUpperCase()+MONTHS[mo-1].slice(1)} ${y}</strong><span class="badge ${paid?'b-done':'b-new'}">${paid?'Выплачено':'Месяц идёт'}</span></div><p>${a.length} заказов · продано на ${money(tot(a))} · к выплате <b>${money(a.reduce((s,o)=>s+part(o),0))}</b></p></a>`;}).join('')||'<p class="small muted">Актов пока нет.</p>'}`;}
 function renderAct(k){const f=farm(),acts=monthActs(allOrders(f));const a=(acts.find(x=>x[0]===k)||[0,null])[1];if(!a)return notFound();
- const [y,mo]=k.split('-').map(Number);const last=new Date(y,mo,0);const tot=a.reduce((s,o)=>s+o.total,0),part=farmerPart(tot);
+ const [y,mo]=k.split('-').map(Number);const last=new Date(y,mo,0);const tot=a.reduce((s,o)=>s+o.total,0),pay=a.reduce((s,o)=>s+part(o),0);
  return `${head('Акт за '+MONTHS[mo-1]+' '+y,'Учебный образец','money')}<div class="pad"><div class="act"><h2>Акт № ${String(mo).padStart(2,'0')}-${f.id.toUpperCase()}</h2><p style="text-align:center" class="small">об оказании услуг агрегатора за период 01.${pad2(mo)}.${y}–${last.getDate()}.${pad2(mo)}.${y}</p>
  <p class="small" style="margin-top:10px">Исполнитель: сервис «Грабелька» (учебный проект).<br>Продавец: ${esc(f.name)}, ${esc(f.person)}.</p>
- <table><thead><tr><th>Дата</th><th>Заказ</th><th class="r">Оплачено покупателем</th><th class="r">Продавцу</th></tr></thead><tbody>${a.sort((x,z)=>x.deliveryDate.localeCompare(z.deliveryDate)).map(o=>`<tr><td>${o.deliveryDate.slice(8)}.${pad2(mo)}</td><td>${esc(o.num)}</td><td class="r">${money(o.total)}</td><td class="r">${money(farmerPart(o.total))}</td></tr>`).join('')}</tbody>
- <tfoot><tr><th colspan="2">Итого, ${a.length} заказов</th><th class="r">${money(tot)}</th><th class="r">${money(part)}</th></tr></tfoot></table>
- <p class="small">Вознаграждение агрегатора (20% от оплаченного покупателем): <b>${money(tot-part)}</b>.<br>К перечислению продавцу: <b>${money(part)}</b>.</p><p class="small" style="margin-top:14px">Стороны претензий не имеют.</p></div>
+ <table><thead><tr><th>Дата</th><th>Заказ</th><th class="r">Оплачено покупателем</th><th class="r">Продавцу</th></tr></thead><tbody>${a.sort((x,z)=>x.deliveryDate.localeCompare(z.deliveryDate)).map(o=>`<tr><td>${o.deliveryDate.slice(8)}.${pad2(mo)}</td><td>${esc(o.num)}</td><td class="r">${money(o.total)}</td><td class="r">${money(part(o))}</td></tr>`).join('')}</tbody>
+ <tfoot><tr><th colspan="2">Итого, ${a.length} заказов</th><th class="r">${money(tot)}</th><th class="r">${money(pay)}</th></tr></tfoot></table>
+ <p class="small">Вознаграждение агрегатора (наценка 25% к цене продавца, скидки на наборы за счёт агрегатора): <b>${money(tot-pay)}</b>.<br>К перечислению продавцу: <b>${money(pay)}</b>.</p><p class="small" style="margin-top:14px">Стороны претензий не имеют.</p></div>
  <button class="btn block ghost no-print" style="margin-top:12px" onclick="print()">${ic('document')}Распечатать или сохранить PDF</button></div>`;}
 function reviews(f){return f.reviews.length?f.reviews.map(r=>`<div class="card"><div class="order-top"><strong>${esc(r.who)}</strong><span class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span></div><p class="small" style="margin-top:6px">${esc(r.text)}</p><p class="tiny muted" style="margin-top:4px">${human(r.date)}</p></div>`).join(''):`<div class="empty">${ic('star')}<p>Отзывов пока нет. Покупатель оставляет отзыв после доставки.</p></div>`;}
 
