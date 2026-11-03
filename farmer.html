@@ -78,7 +78,7 @@ const ic=(n,c='')=>`<svg class="icon ${c}" viewBox="0 0 24 24" aria-hidden="true
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ')+' ₽';
 const $=s=>document.querySelector(s);
-const MARKUP=0.20; // Грабелька: цена на сайте = цена фермера + 20%
+const MARKUP=0.25; // Грабелька: цена на сайте = цена фермера + 25%, это ровно 20% от цены на сайте
 const sitePrice=p=>Math.round(p*(1+MARKUP));
 const farmerPart=t=>Math.round(t/(1+MARKUP));
 const DAY=864e5;
@@ -264,7 +264,7 @@ function renderOrder(id){const f=farm(),o=findOrder(id);if(!o)return notFound();
  return `${head('Заказ '+o.num,(o.fromSheet?'С сайта, из Google Таблицы':'Пример')+' · '+STATUS[o.status],'orders')}<div class="pad">
  <div class="card"><div class="order-top"><strong>${human(o.deliveryDate)}, ${esc(o.slot||'')}</strong>${badge(o.status)}</div><p class="small" style="margin-top:8px">${esc(o.buyerName||'')} · ${esc(o.phone||'')}<br>${esc(o.address||'')}</p>${o.set?`<p class="small muted" style="margin-top:6px">Набор: ${esc(o.set)}</p>`:''}${o.declineReason?`<p class="small" style="margin-top:6px;color:var(--warn)">Причина отказа: ${esc(o.declineReason)}</p>`:''}</div>
  <section class="section"><h2 style="margin-bottom:6px">Состав</h2><div class="card">${items}</div>
- <div class="card flat"><div class="sum"><span>Сумма для покупателя</span><span>${money(o.total)}</span></div><div class="sum"><span>Грабелька, 20% к вашей цене</span><span>−${money(o.total-farmerPart(o.total))}</span></div><div class="sum total"><span>Ваша часть</span><span>${money(farmerPart(o.total))}</span></div></div></section>
+ <div class="card flat"><div class="sum"><span>Сумма для покупателя</span><span>${money(o.total)}</span></div><div class="sum"><span>Грабелька, 20% от цены на сайте</span><span>−${money(o.total-farmerPart(o.total))}</span></div><div class="sum total"><span>Ваша часть</span><span>${money(farmerPart(o.total))}</span></div></div></section>
  ${o.status==='new'?`<div class="row"><button class="btn danger" data-act="decline" data-id="${esc(o.id)}">Отказаться</button><button class="btn green" data-act="accept" data-id="${esc(o.id)}">Принять заказ</button></div>`:''}
  ${o.status==='replace'||rep?`<div class="notice">${ic('swap')}<div>Покупатель получил SMS с предложением замены. В учебной версии ответьте за него:</div></div><div class="row"><button class="btn ghost" data-act="rep-no" data-id="${esc(o.id)}">Покупатель отказался</button><button class="btn" data-act="rep-yes" data-id="${esc(o.id)}">Покупатель согласен</button></div>`:''}
  ${next&&!rep?`<button class="btn block green" data-act="status" data-id="${esc(o.id)}" data-v="${next[0]}">${ic('check')}${next[1]}</button><p class="tiny muted" style="margin-top:6px">Покупатель видит статус в профиле на сайте.</p>`:''}
@@ -293,7 +293,7 @@ function renderProductForm(id){const f=farm(),p=id?f.products.find(x=>x.id===id)
  ${fld('name','Название',`<input name="name" maxlength="60" value="${esc(v.name||'')}" placeholder="Творог 9%">`)}
  <div class="grid2">${fld('category','Категория',`<select name="category">${Object.entries(CATS).map(([k,t])=>`<option value="${k}" ${v.category===k?'selected':''}>${t}</option>`).join('')}</select>`)}
  ${fld('unit','Вес или объём',`<input name="unit" maxlength="20" value="${esc(v.unit||'')}" placeholder="500 г">`)}</div>
- <div class="grid2">${fld('price','Ваша цена, ₽',`<input name="price" type="number" inputmode="numeric" min="1" max="100000" value="${esc(v.price||'')}">`,`<span id="site-price">${v.price?'На сайте: '+money(sitePrice(v.price)):'На сайте +20%'}</span>`)}
+ <div class="grid2">${fld('price','Ваша цена, ₽',`<input name="price" type="number" inputmode="numeric" min="1" max="100000" value="${esc(v.price||'')}">`,`<span id="site-price">${v.price?'На сайте: '+money(sitePrice(v.price)):'На сайте +25%'}</span>`)}
  ${fld('stock','Остаток, шт.',`<input name="stock" type="number" inputmode="numeric" min="0" max="9999" value="${esc(v.stock??'')}">`)}</div>
  <div class="grid2">${fld('made','Дата производства',`<input name="made" type="date" max="${iso(today())}" value="${esc(v.made||'')}">`,'Для покупателя главное отличие')}
  ${fld('expires','Годен до',`<input name="expires" type="date" value="${esc(v.expires||'')}">`)}</div>
@@ -364,7 +364,7 @@ function stats(f,os){const done=os.filter(o=>o.status==='done');const t=today();
  const weeks=Array.from({length:8},(_,i)=>{const a=(8-i)*7,b=(7-i)*7;return {label:addDays(t,-b).getDate()+'.'+pad2(addDays(t,-b).getMonth()+1),v:sum(done.filter(o=>inRange(o,a,b)))};});const wMax=Math.max(...weeks.map(x=>x.v),1);
  const cancelled=os.filter(o=>o.status==='cancelled'&&inRange(o,30,0)).length;
  const rating=f.reviews.length?(f.reviews.reduce((s,r)=>s+r.stars,0)/f.reviews.length):0;
- return `<div class="kpis"><div class="kpi"><span>Выручка за 7 дней</span><b>${money(sum(w))}</b><i>${diff(sum(w),sum(wPrev))>=0?'+':''}${diff(sum(w),sum(wPrev))}% к прошлой неделе</i></div><div class="kpi"><span>Выручка за 30 дней</span><b>${money(sum(m))}</b><i>ваша часть, без 20%</i></div>
+ return `<div class="kpis"><div class="kpi"><span>Выручка за 7 дней</span><b>${money(sum(w))}</b><i>${diff(sum(w),sum(wPrev))>=0?'+':''}${diff(sum(w),sum(wPrev))}% к прошлой неделе</i></div><div class="kpi"><span>Выручка за 30 дней</span><b>${money(sum(m))}</b><i>ваша часть, без доли Грабельки</i></div>
  <div class="kpi"><span>Заказов за 30 дней</span><b>${m.length}</b><i>средний ${money(m.length?sum(m)/m.length:0)}${cancelled?` · отказов ${cancelled}`:''}</i></div><div class="kpi"><span>Повторные заказы</span><b>${cnt?Math.round(rep/cnt*100):0}%</b><i>${rep} из ${cnt} за 30 дней</i></div>
  <div class="kpi"><span>Рейтинг</span><b>${rating?rating.toFixed(1).replace('.',','):'—'} <span class="stars" style="font-size:14px">★</span></b><i>${f.reviews.length} отзывов</i></div><div class="kpi"><span>Товаров в продаже</span><b>${activeProducts(f).length}</b><i>из ${f.products.length}</i></div></div>
  <section class="section"><h2>Выручка по неделям</h2><div class="bars" role="img" aria-label="Выручка по неделям">${weeks.map(x=>`<div title="${money(x.v)}"><i style="height:${Math.round(x.v/wMax*88)}%"></i><span>${x.label}</span></div>`).join('')}</div></section>
@@ -373,7 +373,7 @@ function monthActs(os){const by={};os.filter(o=>o.status==='done').forEach(o=>{c
 function payouts(f,os){const cur=monthKey(iso(today()));const acts=monthActs(os);const curOrders=(acts.find(a=>a[0]===cur)||[0,[]])[1];
  const tot=a=>a.reduce((s,o)=>s+o.total,0);const nm=new Date(today().getFullYear(),today().getMonth()+1,10);
  return `<div class="card" style="background:var(--green-pale);border-color:transparent"><span class="small">Накоплено за ${MONTHS[today().getMonth()]}</span><h1 style="margin:4px 0">${money(farmerPart(tot(curOrders)))}</h1><p class="small">${curOrders.length} доставленных заказов. Выплата до ${nm.getDate()} ${MONTHS_G[nm.getMonth()]} по акту.</p></div>
- <div class="notice">${ic('info')}<div>Как считаем: покупатель платит Грабельке, мы оставляем себе 20% сверх вашей цены, а вашу часть переводим раз в месяц по акту. Отменённые заказы в акт не входят.</div></div>
+ <div class="notice">${ic('info')}<div>Как считаем: покупатель платит Грабельке, мы добавляем 25% к вашей цене (это 20% от цены на сайте) и оставляем их себе, а вашу цену полностью переводим раз в месяц по акту. Отменённые заказы в акт не входят.</div></div>
  <h2 style="margin:16px 0 8px">Акты</h2>${acts.map(([k,a])=>{const [y,mo]=k.split('-').map(Number);const paid=k<cur;return `<a class="card order" href="#/act/${k}"><div class="order-top"><strong>${MONTHS[mo-1][0].toUpperCase()+MONTHS[mo-1].slice(1)} ${y}</strong><span class="badge ${paid?'b-done':'b-new'}">${paid?'Выплачено':'Месяц идёт'}</span></div><p>${a.length} заказов · продано на ${money(tot(a))} · к выплате <b>${money(farmerPart(tot(a)))}</b></p></a>`;}).join('')||'<p class="small muted">Актов пока нет.</p>'}`;}
 function renderAct(k){const f=farm(),acts=monthActs(allOrders(f));const a=(acts.find(x=>x[0]===k)||[0,null])[1];if(!a)return notFound();
  const [y,mo]=k.split('-').map(Number);const last=new Date(y,mo,0);const tot=a.reduce((s,o)=>s+o.total,0),part=farmerPart(tot);
@@ -381,7 +381,7 @@ function renderAct(k){const f=farm(),acts=monthActs(allOrders(f));const a=(acts.
  <p class="small" style="margin-top:10px">Исполнитель: сервис «Грабелька» (учебный проект).<br>Продавец: ${esc(f.name)}, ${esc(f.person)}.</p>
  <table><thead><tr><th>Дата</th><th>Заказ</th><th class="r">Оплачено покупателем</th><th class="r">Продавцу</th></tr></thead><tbody>${a.sort((x,z)=>x.deliveryDate.localeCompare(z.deliveryDate)).map(o=>`<tr><td>${o.deliveryDate.slice(8)}.${pad2(mo)}</td><td>${esc(o.num)}</td><td class="r">${money(o.total)}</td><td class="r">${money(farmerPart(o.total))}</td></tr>`).join('')}</tbody>
  <tfoot><tr><th colspan="2">Итого, ${a.length} заказов</th><th class="r">${money(tot)}</th><th class="r">${money(part)}</th></tr></tfoot></table>
- <p class="small">Вознаграждение агрегатора (20% к цене продавца): <b>${money(tot-part)}</b>.<br>К перечислению продавцу: <b>${money(part)}</b>.</p><p class="small" style="margin-top:14px">Стороны претензий не имеют.</p></div>
+ <p class="small">Вознаграждение агрегатора (20% от оплаченного покупателем): <b>${money(tot-part)}</b>.<br>К перечислению продавцу: <b>${money(part)}</b>.</p><p class="small" style="margin-top:14px">Стороны претензий не имеют.</p></div>
  <button class="btn block ghost no-print" style="margin-top:12px" onclick="print()">${ic('document')}Распечатать или сохранить PDF</button></div>`;}
 function reviews(f){return f.reviews.length?f.reviews.map(r=>`<div class="card"><div class="order-top"><strong>${esc(r.who)}</strong><span class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span></div><p class="small" style="margin-top:6px">${esc(r.text)}</p><p class="tiny muted" style="margin-top:4px">${human(r.date)}</p></div>`).join(''):`<div class="empty">${ic('star')}<p>Отзывов пока нет. Покупатель оставляет отзыв после доставки.</p></div>`;}
 
@@ -461,7 +461,7 @@ document.addEventListener('change',async e=>{const el=e.target,f=farm();
  if(el.dataset.act==='district'){const v=el.value,d=f.delivery.districts;f.delivery.districts=el.checked?DISTRICTS.filter(x=>d.includes(x)||x===v):d.filter(x=>x!==v);save();render();}
  if(el.dataset.act==='set-pick'){SETDRAFT.picks[Number(el.dataset.i)]=el.value;render();}
 });
-document.addEventListener('input',e=>{if(e.target.name==='price'&&$('#site-price')){const v=Number(e.target.value);$('#site-price').textContent=v>0?'На сайте: '+money(sitePrice(v)):'На сайте +20%';}});
+document.addEventListener('input',e=>{if(e.target.name==='price'&&$('#site-price')){const v=Number(e.target.value);$('#site-price').textContent=v>0?'На сайте: '+money(sitePrice(v)):'На сайте +25%';}});
 document.addEventListener('submit',e=>{e.preventDefault();const fm=e.target,v=Object.fromEntries(new FormData(fm).entries()),f=farm();
  if(fm.id==='f-phone'){const n=normPhone(v.phone);if(n.length!==11){toast('Введите номер полностью');return;}L.phone=v.phone;L.step='code';render();return;}
  if(fm.id==='f-code'){if(!/^\d{4}$/.test(v.code)){toast('Код из 4 цифр');return;}const n=normPhone(L.phone);
