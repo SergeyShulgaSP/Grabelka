@@ -405,6 +405,8 @@ function notFound(){return `${head('Не найдено','','home')}<div class="
 /* ===== Router ===== */
 const NAV=[['home','home','Главная'],['orders','list','Заказы'],['products','package','Витрина'],['delivery','truck','Доставка'],['money','chart','Итоги']];
 function render(){const r=route(),f=farm();const app=$('#app');
+ if(!f&&r.name==='join'&&!render.joined){render.joined=true;L.mode='join';}
+ if(f&&r.name==='join'){go('home');return;}
  if(!f){app.innerHTML=renderLogin();$('#nav').hidden=true;$('#shell').classList.add('nonav');return;}
  $('#nav').hidden=false;$('#shell').classList.remove('nonav');
  const map={home:renderHome,orders:renderOrders,order:renderOrder,products:()=>{PTAB='products';return renderProducts();},'product-new':()=>renderProductForm(''),product:renderProductForm,sets:renderSets,set:renderSetForm,delivery:renderDelivery,money:renderMoney,act:renderAct,farm:renderFarm,docs:()=>renderFarm()};
