@@ -471,10 +471,10 @@ document.addEventListener('submit',e=>{e.preventDefault();const fm=e.target,v=Ob
   const demo={'79000000001':'demo-a','79000000002':'demo-b'}[n];const own=Object.values(S.farms).find(x=>normPhone(x.phone)===n);
   if(demo)ensureDemo(demo);const id=demo||own?.id;
   if(!id){sheet('Номер не найден',`<p class="small">Этот телефон ещё не подключён. ${S.launched?'Зарегистрируйтесь на вкладке «Хочу продавать».':'Оставьте заявку на вкладке «Хочу продавать», менеджер позвонит и заведёт ферму.'}</p>`);return;}
-  S.session=id;save();sheetState=SHEET?'loading':'off';loadSheet();go('home');render();toast('Вы вошли');return;}
+  S.session=id;save();sheetState=SHEET?'loading':'off';loadSheet();const first=!profileReady(S.farms[id]);go(first?'farm':'home');render();toast(first?'Заполните анкету фермы':'Вы вошли');return;}
  if(fm.id==='f-lead'){S.leads.push({...v,at:Date.now()});save();sendLead(v);fm.reset();sheet('Заявка принята',`<p class="small">Спасибо! Менеджер Грабельки позвонит в течение рабочего дня, поможет заполнить профиль и первые товары, а потом пришлёт вход по телефону.</p><p class="small muted" style="margin-top:8px">${SHEET?'Заявка записана на лист «Заявки» Google Таблицы.':'В учебной версии заявка сохранена в браузере.'}</p>`);return;}
  if(fm.id==='f-signup'){const n=normPhone(v.phone);if(n.length!==11){toast('Введите номер полностью');return;}if(Object.values(S.farms).some(x=>normPhone(x.phone)===n)||['79000000001','79000000002'].includes(n)){toast('Этот номер уже зарегистрирован, войдите');return;}
-  const id='farm-'+Date.now().toString(36);S.farms[id]=blankFarm(id,v);S.session=id;save();go('home');render();toast('Кабинет создан. Пройдите шаги подключения');return;}
+  const id='farm-'+Date.now().toString(36);S.farms[id]=blankFarm(id,v);S.session=id;save();go('farm');render();toast('Кабинет создан. Заполните анкету фермы');return;}
  if(fm.id==='f-product'){const r=route();const val=checkProduct(fm);if(!val){fm.querySelector('.bad')?.scrollIntoView({block:'center',behavior:'smooth'});toast('Проверьте выделенные поля');return;}
   if(r.id){Object.assign(f.products.find(p=>p.id===r.id),val);}else f.products.unshift({id:'p'+Date.now().toString(36),...val});
   save();go('products');toast(verified(f)?'Товар в витрине':'Товар сохранён. Покажем после проверки документов');return;}
